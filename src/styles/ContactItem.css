@@ -1,0 +1,94 @@
+/* =========================================
+   ContactItem.css
+   ========================================= */
+
+.contact-item {
+    display: flex;
+    padding: 12px 16px;
+    cursor: pointer;
+    align-items: center;
+    transition: background-color 0.2s ease;
+    background-color: transparent;
+}
+
+.contact-item:hover {
+    background-color: var(--hover-effect, #202c33);
+}
+
+/* Contenedor del Avatar (Círculo con inicial) */
+.contact-avatar {
+    width: 49px;
+    height: 49px;
+    border-radius: 50%;
+    background-color: #54656f;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 15px;
+    flex-shrink: 0;
+    color: var(--white, #ffffff);
+    font-size: 20px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+/* Contenedor de la información (derecha) */
+.contact-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0; /* Evita que el texto desborde el flex container */
+}
+
+/* Fila superior: Nombre y Hora */
+.contact-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.contact-name {
+    color: var(--wa-text-primary, #e9edef);
+    font-size: 17px;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.contact-time {
+    color: var(--wa-text-secondary, #8696a0);
+    font-size: 12px;
+}
+
+/* Fila inferior: Último mensaje y Badge */
+.contact-message-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.contact-last-message {
+    color: var(--wa-text-secondary, #8696a0);
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 8px;
+}
+
+/* Círculo verde de mensajes no leídos */
+.unread-badge {
+    background-color: var(--wa-green, #00a884);
+    color: var(--wa-dark, #111b21);
+    border-radius: 50%;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

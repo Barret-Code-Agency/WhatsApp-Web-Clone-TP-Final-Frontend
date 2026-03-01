@@ -1,0 +1,202 @@
+.welcome-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--wa-bg-app);
+    position: relative;
+    padding: 20px;
+}
+
+.welcome-content {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    max-width: 560px;
+    gap: 30px;
+    align-items: center;
+}
+
+.welcome-main-card {
+    background-color: var(--wa-bg-panel);
+    border-radius: 24px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 352px;
+    margin-bottom: 5px;
+}
+
+.welcome-icon-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.welcome-main-image {
+    background-image: var(--wa-pc);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 150px;
+    height: 150px;
+}
+
+.welcome-title {
+    color: var(--wa-text-primary);
+    font-size: 24px;
+    font-weight: 300;
+    margin: 20px 0 10px;
+}
+
+.welcome-description {
+    color: var(--wa-text-secondary);
+    font-size: 14px;
+    line-height: 20px;
+    margin: 15px 0 30px;
+    max-width: 450px;
+}
+
+.welcome-download-button {
+    background-color: var(--wa-green-soft);
+    color: var(--wa-text-primary);
+    padding: 10px 28px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 400;
+    border: 1px solid var(--wa-green);
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.welcome-download-button:hover {
+    opacity: 0.85;
+}
+
+.welcome-quick-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    width: 100%;
+}
+
+.quick-action-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.quick-action-card {
+    background-color: var(--wa-bg-panel);
+    border-radius: 12px;
+    width: 96px;
+    height: 96px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.quick-action-card:hover {
+    background-color: var(--wa-bg-hover);
+    border-color: var(--wa-green);
+}
+
+.quick-action-label {
+    color: var(--wa-text-secondary);
+    font-size: 13px;
+}
+
+.welcome-footer {
+    position: absolute;
+    bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--wa-text-secondary);
+    font-size: 12px;
+}
+
+/* ════════════════════════════════════════
+    RESPONSIVE
+════════════════════════════════════════ */
+
+@media (max-width: 1100px) {
+    .welcome-main-card {
+        max-width: 300px;
+    }
+
+    .welcome-title {
+        font-size: 20px;
+    }
+
+    .welcome-description {
+        font-size: 13px;
+    }
+
+    .welcome-quick-actions {
+        gap: 10px;
+    }
+
+    .quick-action-card {
+        width: 80px;
+        height: 80px;
+        padding: 14px;
+    }
+}
+
+@media (max-width: 900px) {
+    .welcome-content {
+        gap: 20px;
+    }
+
+    .welcome-main-card {
+        max-width: 260px;
+        padding: 16px;
+    }
+
+    .welcome-main-image {
+        width: 110px;
+        height: 110px;
+    }
+
+    .welcome-title {
+        font-size: 17px;
+        margin: 12px 0 6px;
+    }
+
+    .welcome-description {
+        font-size: 12px;
+        margin: 8px 0 20px;
+    }
+
+    .quick-action-card {
+        width: 72px;
+        height: 72px;
+        padding: 12px;
+    }
+
+    .quick-action-label {
+        font-size: 11px;
+    }
+
+    .welcome-footer {
+        bottom: 20px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 767px) {
+    .welcome-container {
+        display: none;
+    }
+}

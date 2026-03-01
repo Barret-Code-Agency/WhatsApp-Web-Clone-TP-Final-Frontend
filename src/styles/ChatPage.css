@@ -1,0 +1,43 @@
+.chat-page-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--wa-dark-bg);
+    position: relative;
+}
+
+/* App.css */
+
+/* Contenedor principal del chat */
+.app-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--main-gray, #111b21); /* Color oscuro base */
+}
+
+/* Área donde se cargan las rutas (Welcome o Chat) */
+.main-content-area {
+    flex-grow: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* El envoltorio del QR para que parezca cliqueable */
+.qr-wrapper-clickable {
+    cursor: pointer;
+    width: 100%;
+    height: 100vh;
+}
+
+/* Panel lateral de agregar contacto */
+.add-contact-aside {
+    width: 30%;
+    min-width: 350px;
+    height: 100%;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: var(--wa-dark-bg, #111b21);
+}
