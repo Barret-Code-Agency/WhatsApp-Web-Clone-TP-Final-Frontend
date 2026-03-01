@@ -1,0 +1,533 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: #fcf5eb;
+    overflow-x: hidden;
+    height: auto;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+.login-container {
+    background: #fcf5eb;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    height: auto;
+    display: flex;
+    padding-bottom: 150px;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-header {
+    width: 100%;
+    padding: 10px 40px;
+}
+
+.logo-wrapper {
+    display: flex;
+    align-items: flex-end;
+    padding-bottom: 80px;
+    gap: 2px;
+}
+
+[data-icon="wa-logo"] {
+    color: var(--wa-green);
+}
+
+[data-icon="wa-wordmark"] {
+    color: var(--wa-green);
+}
+
+.main-content {
+    width: 100%;
+    max-width: 900px;
+    padding-bottom: 50px;
+}
+
+.download-banner {
+    background: #fff;
+    border: 1px solid var(--wa-dark);
+    border-radius: 23px;
+    padding: 30px 55px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.banner-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.banner-text h3 {
+    font-size: 18px;
+    margin: 0;
+    color: var(--wa-text-login);
+    font-weight: 500;
+    padding-bottom: 5px;
+}
+
+.banner-text p {
+    font-size: 16px;
+    margin: 0;
+    padding-right: 10px;
+    color: var(--wa-text-login);
+    line-height: 1.1;
+}
+
+.btn-download-pill {
+    background-color: #25D366;
+    border: 0.5px solid var(--wa-dark);
+    padding: 15px 28px;
+    border-radius: 30px;
+    font-weight: 300;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #111b21;
+}
+
+.log-card {
+    background: #fff;
+    border: 1px solid var(--wa-dark);
+    border-radius: 28px;
+    padding: 30px;
+}
+
+.card-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.instructions-side h2 {
+    font-weight: 400;
+    font-size: 32px;
+    margin-bottom: 30px;
+    color: var(--wa-text-login);
+}
+
+.steps-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 25px;
+}
+
+.steps-list li {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 500;
+    color: #41525d;
+}
+
+.step-num {
+    min-width: 26px;
+    height: 26px;
+    border: 1px solid var(--wa-dark);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.help-link {
+    color: #008069;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.session-keeper {
+    margin-top: 45px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--wa-text-secondary);
+    font-size: 14px;
+}
+
+.custom-checkbox input {
+    margin-right: 12px;
+    accent-color: var(--wa-green);
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+.link-phone {
+    margin-top: 30px;
+    text-align: left;
+    transform: translateX(-10px);
+}
+
+.link-phone a {
+    color: var(--wa-text-login);
+    text-decoration: underline 2px solid var(--wa-green);
+    text-underline-offset: 5px;
+    font-weight: 400;
+    display: inline-flex;
+    font-size: 15.5px;
+    align-items: center;
+    gap: 2px;
+    padding-bottom: 4px;
+}
+
+.chevron-icon {
+    display: flex;
+    align-items: center;
+    color: #54656f;
+}
+
+.link-phone a:hover {
+    opacity: 0.8;
+}
+
+.qr-frame {
+    background-color: white;
+    padding: 10px;
+    border-radius: 4px;
+    transform: translateX(20px);
+}
+
+.qr-frame img {
+    width: 228px;
+    height: 228px;
+    display: block;
+}
+
+.qr-side {
+    display: flex;
+    flex-direction: column;
+    align-items: first baseline;
+    padding-left: 0px;
+}
+
+.login-footer {
+    padding-top: 30px;
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+    color: var(--wa-text-login);
+}
+
+.green-link {
+    color: var(--wa-text-login);
+    text-decoration: underline;
+    text-decoration-color: var(--wa-green);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 5px;
+    cursor: pointer;
+}
+
+.security-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 15px 0 10px;
+    color: var(--wa-text-secondary);
+    font-size: 16px;
+}
+
+.legal-text {
+    font-size: 12px;
+    color: var(--wa-text-secondary);
+}
+
+.wa-icon-inline {
+    display: inline-flex;
+    align-self: center;
+    vertical-align: middle;
+    color: #8696a0;
+    margin: 0 2px;
+}
+
+.wa-svg-icon {
+    display: block;
+}
+
+.step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.step-text-container {
+    font-size: 18px;
+    line-height: 1.5;
+    color: #41525d;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.wa-square-icon-wrapper {
+    display: inline-flex;
+    margin: 0 6px;
+    vertical-align: middle;
+}
+
+.wa-square-icon-wrapper svg {
+    border-radius: 4px;
+}
+
+.wa-icon-inline {
+    display: inline-flex;
+    vertical-align: middle;
+    margin: 0 4px;
+    color: var(--wa-text-secondary, #8696a0);
+}
+
+.wa-icon-inline svg {
+    display: block;
+}
+
+.step-text-container strong {
+    color: var(--wa-bg-app, #111B21);
+    font-weight: 600;
+}
+
+.wa-icon-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--wa-dark);
+    border-radius: 6px;
+    padding: 1px 0.5px;
+    margin: 0 4px;
+    vertical-align: middle;
+    color: #54656f;
+}
+
+.wa-icon-box svg {
+    display: block;
+}
+
+
+@media (max-width: 940px) {
+    .login-container {
+        padding-left: 40px;
+        padding-right: 40px;
+    }
+
+    .main-content {
+        width: 90%;
+    }
+}
+
+@media (max-width: 900px) {
+    .logo-wrapper {
+        padding-bottom: clamp(40px, 8vw, 80px);
+    }
+
+    .instructions-side h2 {
+        font-size: clamp(24px, 3.5vw, 32px);
+    }
+
+    .steps-list li,
+    .step-text-container {
+        font-size: clamp(14px, 2vw, 18px);
+    }
+
+    .banner-text h3 {
+        font-size: clamp(14px, 2vw, 18px);
+    }
+
+    .banner-text p {
+        font-size: clamp(13px, 1.8vw, 16px);
+    }
+
+    .btn-download-pill {
+        font-size: clamp(12px, 1.8vw, 16px);
+        padding: clamp(10px, 1.5vw, 15px) clamp(16px, 2.5vw, 28px);
+    }
+
+    .qr-frame img {
+        width: clamp(170px, 25vw, 228px);
+        height: clamp(170px, 25vw, 228px);
+    }
+
+    .log-card {
+        padding: clamp(20px, 3vw, 30px);
+    }
+
+    .download-banner {
+        padding: clamp(20px, 3vw, 30px) clamp(28px, 5vw, 55px);
+    }
+
+    .login-footer {
+        font-size: clamp(14px, 2vw, 18px);
+        padding: clamp(24px, 4vw, 20px);
+    }
+
+    .security-note {
+        font-size: clamp(12px, 1.8vw, 16px);
+    }
+}
+
+@media (max-width: 700px) {
+    .login-container {
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-bottom: 20px !important;
+        max-height: 100%;
+    }
+
+    .device-illustration {
+        display: none;
+    }
+
+    .main-content {
+        padding-bottom: 0;
+    }
+
+    .card-inner {
+        flex-direction: column-reverse;
+        align-items: center;
+    }
+
+    .qr-side {
+        align-items: center;
+        width: 90%;
+        margin-bottom: clamp(10px, 2.5vw, 16px);
+    }
+
+    .qr-frame {
+        transform: none;
+    }
+
+    .link-phone {
+        text-align: center;
+        transform: none;
+        margin-top: clamp(8px, 2vw, 14px);
+    }
+
+    .instructions-side {
+        width: 100%;
+    }
+
+    .download-banner {
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
+        text-align: center;
+    }
+
+    .banner-left {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .banner-text p {
+        padding-right: 0;
+    }
+
+    .logo-wrapper {
+        padding-bottom: clamp(10px, 2.5vw, 20px);
+    }
+
+    .instructions-side h2 {
+        font-size: clamp(16px, 4.5vw, 20px);
+        margin-bottom: clamp(10px, 2.5vw, 16px);
+    }
+
+    .steps-list {
+        margin-bottom: clamp(8px, 2vw, 14px);
+    }
+
+    .step-item {
+        margin-bottom: clamp(8px, 2vw, 14px);
+    }
+
+    .steps-list li,
+    .step-text-container {
+        font-size: clamp(12px, 3.5vw, 14px);
+    }
+
+    .steps-list li {
+        gap: clamp(8px, 2vw, 12px);
+        margin-bottom: clamp(8px, 2vw, 14px);
+    }
+
+    .session-keeper {
+        margin-top: clamp(12px, 3vw, 20px);
+    }
+
+    .banner-text h3 {
+        font-size: clamp(13px, 3.5vw, 14px);
+    }
+
+    .banner-text p {
+        font-size: clamp(11px, 3vw, 13px);
+    }
+
+    .btn-download-pill {
+        font-size: clamp(11px, 3vw, 12px);
+        padding: clamp(8px, 2vw, 10px) clamp(12px, 3vw, 16px);
+    }
+
+    .qr-frame img {
+        width: clamp(120px, 30vw, 160px);
+        height: clamp(120px, 30vw, 160px);
+    }
+
+    .log-card {
+        padding: clamp(14px, 4vw, 20px);
+    }
+
+    .download-banner {
+        padding: clamp(14px, 4vw, 20px);
+    }
+
+    .login-footer {
+        font-size: clamp(11px, 3.5vw, 14px);
+        padding: clamp(14px, 3.5vw, 20px);
+    }
+
+    .security-note {
+        font-size: clamp(10px, 3vw, 12px);
+        margin: clamp(6px, 1.5vw, 10px) 0;
+    }
+
+    .step-num {
+        min-width: clamp(18px, 4vw, 24px);
+        height: clamp(18px, 4vw, 24px);
+        font-size: clamp(10px, 2.5vw, 13px);
+    }
+}
+
+@media (max-width: 941px) {
+    .link-phone a {
+        font-size: clamp(10px, 1.5vw, 15.5px);
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 471px) {
+    .wa-icon-box {
+        display: none;
+    }
+
+    .wa-square-icon-wrapper {
+        display: none;
+    }
+
+    .banner-text p {
+        display: none;
+    }
+}

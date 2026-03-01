@@ -1,0 +1,64 @@
+.bp__container {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.bp__desc {
+    color: #8696a0;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.bp__desc code {
+    color: #00a884;
+    background: rgba(0, 168, 132, 0.1);
+    padding: 1px 5px;
+    border-radius: 4px;
+}
+
+.bp__btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.bp__btn:hover {
+    opacity: 0.85;
+}
+
+.bp__btn--export {
+    background-color: #00a884;
+    color: #111b21;
+}
+
+.bp__btn--import {
+    background-color: #2a3942;
+    color: #e9edef;
+    border: 1px solid #374045;
+}
+
+.bp__toast {
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.bp__toast--ok {
+    background: rgba(0, 168, 132, 0.2);
+    color: #00a884;
+}
+
+.bp__toast--error {
+    background: rgba(234, 0, 56, 0.2);
+    color: #ea0038;
+}

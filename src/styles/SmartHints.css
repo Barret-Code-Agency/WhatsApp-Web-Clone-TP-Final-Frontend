@@ -1,0 +1,38 @@
+.sh__container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.sh__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background-color: rgba(0, 168, 132, 0.15);
+    border: 1px solid rgba(0, 168, 132, 0.4);
+    border-radius: 16px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    max-width: 240px;
+}
+
+.sh__chip:hover {
+    background-color: rgba(0, 168, 132, 0.3);
+    border-color: #00a884;
+}
+
+.sh__icon {
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.sh__label {
+    color: #00a884;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
