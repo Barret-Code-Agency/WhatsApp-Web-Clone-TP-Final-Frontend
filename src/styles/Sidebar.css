@@ -571,7 +571,7 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    margin-top: 200px;
+    margin-top: 150px;
     width: 160px;
     height: 160px;
 }
@@ -874,10 +874,6 @@
     .sidebar-footer {
         display: none;
     }
-
-    .comunidades-hero {
-    padding: 30px 24px;
-    }
 }
 
 
@@ -968,10 +964,6 @@
     .nav-user-avatar2 img {
         width: 40px;
         height: 40px;
-    }
-
-    .comunidades-hero {
-    padding: 15px 24px;
     }
 
 }
