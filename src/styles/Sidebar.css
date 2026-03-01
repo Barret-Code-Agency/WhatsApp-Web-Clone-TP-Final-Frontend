@@ -874,7 +874,13 @@
     .sidebar-footer {
         display: none;
     }
+
+    .comunidades-hero {
+    padding: 30px 24px;
+    }
 }
+
+
 
 @media (max-width: 768px) {
     .sidebar-root {
@@ -963,6 +969,11 @@
         width: 40px;
         height: 40px;
     }
+
+    .comunidades-hero {
+    padding: 15px 24px;
+    }
+
 }
 
 @media (max-width: 320px) {
