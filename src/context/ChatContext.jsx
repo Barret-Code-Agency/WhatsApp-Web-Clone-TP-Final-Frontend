@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import { contactsData } from '../data/contactsData.jsx';
-import { initialMessages } from "../data/InitialMessages.js";
+import { initialMessages } from "../data/initialMessages.js";
 import { useNavigate } from "react-router-dom";
 import { applyTheme, PRESETS } from './ThemeContext';
 
