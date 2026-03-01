@@ -41,13 +41,15 @@ WhatsApp Web Clone es una aplicación de alto nivel que replica la experiencia v
   </table>
 </div>
 
-Demo en Video
 <div align="center">
-  <video src="./public/images/Screenshots/VideoDemo.mp4" width="100%" controls muted>
-    Tu navegador no admite el elemento de video.
-  </video>
-  <p><i>Interacción con la IA.</i></p>
+  <a href="[https://youtu.be/TU_VIDEO_ID](https://youtu.be/h1XztaPgLeo
+)<img width="81" height="21" alt="image" src="https://github.com/user-attachments/assets/02fa2f40-32b5-48ae-b564-7e0e9fad8e19" />
+">
+    <img src="https://img.youtube.com/vi/TU_VIDEO_ID/maxresdefault.jpg" width="100%" />
+  </a>
+  <p><i>▶ Click para ver demo — Interacción con la IA</i></p>
 </div>
+
 ________________________________________
 Flujo de Usuario y Pantallas
 
