@@ -5,13 +5,13 @@ import "../styles/StatusScreen.css";
 const VIDEO_IDS = ['001', '022', '049', '002', '003', '046', '005'];
 
 const STATUS_VIDEOS = {
-    '001': 'https://www.youtube.com/embed/7qlpNqXIhWM?autoplay=1&rel=0&enablejsapi=1',
-    '022': 'https://www.youtube.com/embed/3nbjhpcZ9_g?autoplay=1&rel=0&enablejsapi=1',
-    '049': 'https://www.youtube.com/embed/5HBpHE_LiGk?autoplay=1&rel=0&enablejsapi=1',
-    '002': 'https://www.youtube.com/embed/dRHuMRspeI0?autoplay=1&rel=0&enablejsapi=1',
-    '003': 'https://www.youtube.com/embed/3FhtXFoRz48?autoplay=1&rel=0&enablejsapi=1',
-    '046': 'https://www.youtube.com/embed/7kKGDNiOBQY?autoplay=1&rel=0&enablejsapi=1',
-    '005': 'https://www.youtube.com/embed/iw4DaGBx3ts?autoplay=1&rel=0&enablejsapi=1',
+    '001': 'https://res.cloudinary.com/domydb5pd/video/upload/v1772402340/messi_uc6pik.mp4',
+    '002': 'https://res.cloudinary.com/domydb5pd/video/upload/v1772402340/ronaldo_lqpsdo.mp4',
+    '003': 'https://res.cloudinary.com/domydb5pd/video/upload/v1772402340/james_eqzw3f.mp4',
+    '005': 'https://res.cloudinary.com/domydb5pd/video/upload/v1772402341/hamilton_d0otom.mp4',
+    '022': 'https://res.cloudinary.com/domydb5pd/video/upload/v1772402341/boldt_qmrf7m.mp4',
+    '046': 'https://res.cloudinary.com/domydb5pd/video/upload/v1772402340/wemby_gsex04.mp4',
+    '049': 'https://res.cloudinary.com/domydb5pd/video/upload/v1772402340/ginobili_lcqeie.mp4',
 };
 
 const StatusOverlay = ({ contact, onClose }) => {
@@ -43,13 +43,12 @@ const StatusOverlay = ({ contact, onClose }) => {
                     <span className="status-overlay-time">Hace 5 min</span>
                     <button className="status-close-btn" onClick={onClose}>✕</button>
                 </div>
-                <iframe
+                <video
                     className="status-video"
                     src={STATUS_VIDEOS[contact.id_usuario]}
-                    title={contact.name}
-                    frameBorder="0"
-                    allow="autoplay; encrypted-media"
-                    allowFullScreen
+                    autoPlay
+                    controls
+                    loop
                 />
             </div>
         </div>
