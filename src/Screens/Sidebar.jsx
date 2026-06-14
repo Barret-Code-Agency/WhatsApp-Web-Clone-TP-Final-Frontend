@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useChat } from '../context/ChatContext';
 import { useLocation, Link } from 'react-router-dom';
 import { MessageSquarePlus, EllipsisVertical, Search, X } from 'lucide-react';
-import { contactsData } from '../data/contactsData.jsx';
 import { CANALES } from '../data/canalesData';
 import ChannelIcon from '../components/conmon/ChannelIcon.jsx';
 import ChatIcon from '../components/conmon/ChatIcon.jsx';
@@ -131,12 +130,13 @@ const FavoritosPanel = ({ onClose }) => (
     </div>
 );
 
-const NuevoTipoPanel = ({ onClose }) => (
+const NuevoTipoPanel = ({ onClose, onNewGroup }) => (
     <div className="filter-panel animate-slide-in">
         <PanelHeader title="Nuevos elementos" onClose={onClose} />
         <div className="nuevo-tipo-list">
             {NUEVO_TIPO_OPCIONES.map((item, i) => (
-                <div key={i} className="nuevo-tipo-item">
+                <div key={i} className="nuevo-tipo-item"
+                    onClick={item.label === 'Nuevo grupo' ? onNewGroup : undefined}>
                     <span className="nuevo-tipo-icon">{item.icon}</span>
                     <span>{item.label}</span>
                 </div>
@@ -192,14 +192,14 @@ const ComunidadesPanel = ({ onClose }) => (
 const MultimediaPanel = ({ onClose }) => (
     <div className="side-full-panel animate-slide-in">
         <PanelHeader title="Multimedia" onClose={onClose} />
-        <div className="filter-panel-empty" style={{ marginTop: '80px' }}>
+        <div className="filter-panel-empty sidebar-multimedia-empty">
             <div className="filter-panel-icon">
                 <MultimediaIcon color="var(--wa-icon-lighter)" size={200} />
             </div>
-            <h3 style={{ color: 'var(--wa-text-primary)', marginTop: '20px' }}>
+            <h3 className="sidebar-multimedia-title">
                 No hay archivos multimedia
             </h3>
-            <p className="filter-panel-sub" style={{ padding: '0 40px', textAlign: 'center' }}>
+            <p className="filter-panel-sub sidebar-multimedia-sub">
                 Los archivos fotos, videos y documentos que compartas en tus chats aparecerán aquí.
             </p>
         </div>
@@ -243,24 +243,27 @@ const PerfilPanel = ({ onClose, userName }) => (
     </div>
 );
 
-const NuevoChatPanel = ({ onClose }) => (
-    <div className="side-full-panel animate-slide-in">
-        <PanelHeader title="Nuevo chat" onClose={onClose} />
-        <div className="canales-search">
-            <Search size={16} color="var(--wa-text-secondary)" />
-            <input type="text" placeholder="Buscar contacto" />
-        </div>
-        {contactsData.slice(0, 15).map(c => (
-            <div key={c.id_usuario} className="contact-item" style={{ padding: '0 12px' }}>
-                <img src={c.evatar_url} alt={c.name} className="contact-avatar" style={{ marginLeft: 0 }} />
-                <div className="contact-info" style={{ padding: '0 12px' }}>
-                    <span className="contact-name">{c.name}</span>
-                    <span className="contact-message">{c.estado_bio}</span>
-                </div>
+const NuevoChatPanel = ({ onClose }) => {
+    const { contacts } = useChat();
+    return (
+        <div className="side-full-panel animate-slide-in">
+            <PanelHeader title="Nuevo chat" onClose={onClose} />
+            <div className="canales-search">
+                <Search size={16} color="var(--wa-text-secondary)" />
+                <input type="text" placeholder="Buscar contacto" />
             </div>
-        ))}
-    </div>
-);
+            {contacts.slice(0, 15).map(c => (
+                <div key={c.id_usuario} className="contact-item sidebar-nuevochat-item">
+                    <img src={c.evatar_url} alt={c.name} className="contact-avatar sidebar-nuevochat-avatar" />
+                    <div className="contact-info sidebar-nuevochat-info">
+                        <span className="contact-name">{c.name}</span>
+                        <span className="contact-message">{c.estado_bio}</span>
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+};
 
 const MenuTresPuntos = ({ onClose }) => (
     <div className="tres-puntos-menu">
@@ -306,10 +309,10 @@ const BottomNav = ({ activeNav, setActiveNav }) => {
 // ════════════════════════════════════════════════════════════════════════════
 //  SIDEBAR PRINCIPAL
 // ════════════════════════════════════════════════════════════════════════════
-const Sidebar = ({ onAddContactClick, onLogout }) => {
+const Sidebar = ({ onLogout, onNewGroup }) => {
     const location = useLocation();
-    const activeId = location.pathname.split('/chat/')[1] || null;
-    const { unreadCounts, userName } = useChat();
+    const activeId = (location.pathname.match(/\/(?:chat|group)\/(.+)/) || [])[1] || null;
+    const { contacts, groups, unreadCounts, userName } = useChat();
 
     const [activeFilter, setActiveFilter] = useState('Todos');
     const [activeNav, setActiveNav] = useState('chats');
@@ -328,14 +331,14 @@ const Sidebar = ({ onAddContactClick, onLogout }) => {
 
     const filteredContacts = useMemo(() => {
         const list = activeFilter === 'No leídos'
-            ? contactsData.filter(c => (unreadCounts?.[c.id_usuario] || 0) > 0)
-            : contactsData;
+            ? contacts.filter(c => (unreadCounts?.[c.id_usuario] || 0) > 0)
+            : contacts;
 
         return [...list].sort(
             (a, b) => (unreadCounts?.[b.id_usuario] || 0) - (unreadCounts?.[a.id_usuario] || 0)
         );
 
-    }, [activeFilter]);
+    }, [activeFilter, contacts, unreadCounts]);
 
     const closePanel = () => setActiveNav('chats');
 
@@ -363,7 +366,7 @@ const Sidebar = ({ onAddContactClick, onLogout }) => {
 
             <div className="chats-container">
                 {activeFilter === 'Favoritos' && <FavoritosPanel onClose={() => setActiveFilter('Todos')} />}
-                {activeFilter === 'Plus' && <NuevoTipoPanel onClose={() => setActiveFilter('Todos')} />}
+                {activeFilter === 'Plus' && <NuevoTipoPanel onClose={() => setActiveFilter('Todos')} onNewGroup={onNewGroup} />}
                 {showNuevoChatPanel && <NuevoChatPanel onClose={() => setShowNuevoChatPanel(false)} />}
 
                 {activeFilter !== 'Favoritos' && activeFilter !== 'Plus' && !showNuevoChatPanel && (
@@ -376,8 +379,7 @@ const Sidebar = ({ onAddContactClick, onLogout }) => {
                                     title="Nuevo chat">
                                     <MessageSquarePlus size={20} color="var(--wa-text-secondary)" />
                                 </div>
-                                <div className="header-action-btn"
-                                    style={{ position: 'relative' }}
+                                <div className="header-action-btn sidebar-menu-anchor"
                                     ref={menuRef}
                                     title="Menú">
                                     <div onClick={() => setShowMenuTresPuntos(v => !v)}>
@@ -407,13 +409,27 @@ const Sidebar = ({ onAddContactClick, onLogout }) => {
                         </div>
 
                         <div className="contacts-list">
+                            {groups.map(g => (
+                                <Link key={g.group_id}
+                                    to={`/group/${g.group_id}`}
+                                    className="contact-link">
+                                    <ContactItem
+                                        name={g.name}
+                                        lastMessage={g.description || 'Grupo'}
+                                        time=""
+                                        unreadCount={0}
+                                        avatar={g.avatar_url || '/images/default-avatar.jpg'}
+                                        isActive={String(activeId) === String(g.group_id)}
+                                    />
+                                </Link>
+                            ))}
                             {filteredContacts.length === 0 ? (
                                 <div className="no-results"><p>No hay chats no leídos</p></div>
                             ) : (
                                 filteredContacts.map(contact => (
                                     <Link key={contact.id_usuario}
                                         to={`/chat/${contact.id_usuario}`}
-                                        style={{ textDecoration: 'none', color: 'inherit' }}>
+                                        className="contact-link">
                                         <ContactItem
                                             name={contact.name}
                                             lastMessage={contact.estado_bio}

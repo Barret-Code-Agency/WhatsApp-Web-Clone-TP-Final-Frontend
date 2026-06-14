@@ -17,7 +17,7 @@ const STATUS_VIDEOS = {
 const StatusOverlay = ({ contact, onClose }) => {
     const [progress, setProgress] = useState(0);
     const timerRef = useRef(null);
-    const startTime = useRef(Date.now());
+    const startTime = useRef(0);
     const duration = 30000;
 
     useEffect(() => {
@@ -96,8 +96,7 @@ const StatusScreen = () => {
 
             <div className="status-item">
                 <div className="status-avatar-wrapper">
-                    <img src="/images/avatar.avif" className="status-img" alt="Yo"
-                        style={{ width: 52, height: 52 }} />
+                    <img src="/images/avatar.avif" className="status-img status-img--mine" alt="Yo" />
                     <div className="status-add-icon">+</div>
                 </div>
                 <div className="status-info">

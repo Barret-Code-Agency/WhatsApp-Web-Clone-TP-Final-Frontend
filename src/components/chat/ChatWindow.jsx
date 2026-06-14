@@ -4,6 +4,7 @@ import { useChat } from '../../context/ChatContext';
 import { Send, Check, CheckCheck, Smile } from 'lucide-react';
 import SmartHints from '../../features/smart-hints/SmartHints';
 import EmojiPicker from 'emoji-picker-react';
+import { MESSAGE_STATUS } from '../../constants/ui.js';
 
 import '../../styles/ChatWindow.css';
 import '../../styles/emoji-additions.css'
@@ -17,13 +18,7 @@ const ChatWindow = ({ isMobile, onBack }) => {
     const inputPickerRef = useRef(null);
     const reactionPickerRef = useRef(null);
 
-    const { contacts, messages, sendMessage, userName, isTyping, markAsRead, toggleReaction, getReactions } = useChat();
-
-    const contactNames = useMemo(
-        () => new Set((contacts || []).map(c => c.name.trim().toLowerCase())),
-        [contacts]
-    );
-    const isMyMessage = (author) => !contactNames.has(String(author).trim().toLowerCase());
+    const { contacts, messages, sendMessage, isTyping, markAsRead, toggleReaction, getReactions, openConversation } = useChat();
 
     const contact = useMemo(
         () => (contacts || []).find(c => String(c.id_usuario) === String(id_usuario)),
@@ -39,6 +34,14 @@ const ChatWindow = ({ isMobile, onBack }) => {
     useEffect(() => {
         if (id_usuario) markAsRead(id_usuario);
     }, [id_usuario, markAsRead]);
+
+    // Carga los mensajes persistidos al abrir el chat y los refresca por polling
+    useEffect(() => {
+        if (!id_usuario) return;
+        openConversation(id_usuario);
+        const interval = setInterval(() => openConversation(id_usuario), 4000);
+        return () => clearInterval(interval);
+    }, [id_usuario, openConversation]);
 
     // Scroll al último mensaje
     useEffect(() => {
@@ -104,7 +107,7 @@ const ChatWindow = ({ isMobile, onBack }) => {
 
             <main className="cw__messages">
                 {chatMessages.map(m => {
-                    const mine = isMyMessage(m.author);
+                    const mine = m.mine;
                     const msgReactions = getReactions(id_usuario, m.id);
                     const hasReactions = Object.keys(msgReactions).length > 0;
 
@@ -122,7 +125,7 @@ const ChatWindow = ({ isMobile, onBack }) => {
                             <div className="cw__bubble-footer">
                                 <span className="cw__bubble-time">{m.time}</span>
                                 {mine && (
-                                    m.status === 'read'
+                                    m.status === MESSAGE_STATUS.READ
                                         ? <CheckCheck size={16} className="cw__tick cw__tick--read" />
                                         : <Check size={16} className="cw__tick" />
                                 )}

@@ -1,7 +1,7 @@
 import React from 'react';
 import NavIconButton from './NavIconButton';
 
-const ChannelIcon = ({ isActive, onClick, color = "#8696a0" }) => (
+const ChannelIcon = ({ isActive, onClick }) => (
     <NavIconButton onClick={onClick} isActive={isActive}>
         <svg viewBox="0 0 24 24" height="24" width="24" preserveAspectRatio="xMidYMid meet">
             <title>wds-ic-channels</title>

@@ -1,13 +1,30 @@
-import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
-import { contactsData } from '../data/contactsData.jsx';
-import { initialMessages } from "../data/initialMessages.js";
+import React, { createContext, useState, useContext, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
-import { applyTheme, PRESETS } from './ThemeContext';
+import { getToken, clearToken } from '../services/api.js';
+import {
+    listContacts as apiListContacts,
+    searchUsers as apiSearchUsers,
+    addContact as apiAddContact
+} from '../services/contactService.js';
+import {
+    openPrivateConversation,
+    getMessages as apiGetMessages,
+    sendMessage as apiSendMessage,
+    sendBotReply as apiSendBotReply
+} from '../services/conversationService.js';
+import {
+    listGroups as apiListGroups,
+    createGroup as apiCreateGroup
+} from '../services/groupService.js';
+import { mapContact } from '../mappers/contactMapper.js';
+import { mapMessage } from '../mappers/messageMapper.js';
+import { mapGroup } from '../mappers/groupMapper.js';
+import { STORAGE_KEYS } from '../constants/storage.js';
+import { GROQ } from '../constants/groq.js';
 
 const ChatContext = createContext();
 
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
-const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 const loadFromStorage = (key, fallback) => {
     try {
@@ -28,18 +45,6 @@ const saveToStorage = (key, value) => {
     } catch {
         console.warn("No se pudo guardar en localStorage.");
     }
-};
-
-const formatTime = (date) =>
-    date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-
-const buildUnreadCounts = (msgs) => {
-    const counts = {};
-    const opciones = [1, 1, 2, 2, 3];
-    Object.keys(msgs).forEach((id, index) => {
-        counts[id] = index < 10 ? 0 : opciones[index % opciones.length];
-    });
-    return counts;
 };
 
 const getFallbackResponse = (userName, userText = '') => {
@@ -68,17 +73,17 @@ const getFallbackResponse = (userName, userText = '') => {
 const getAIResponse = async (contact, userName, userText) => {
     const bioContext = contact.estado_bio || "Deportista profesional de alto rendimiento.";
     try {
-        const response = await fetch(GROQ_URL, {
+        const response = await fetch(GROQ.URL, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${GROQ_API_KEY}`
             },
             body: JSON.stringify({
-                model: "llama-3.3-70b-versatile",
+                model: GROQ.MODEL,
                 messages: [{
                     role: "system",
-                    content: `Actúa como ${contact.name}, deportista famoso. Estás hablando por WhatsApp con un amigo cercano de toda la vida llamado ${userName}. 
+                    content: `Actúa como ${contact.name}, deportista famoso. Estás hablando por WhatsApp con un amigo cercano de toda la vida llamado ${userName}.
 Bio: ${bioContext}
 Reglas:
 1. Tono informal, relajado y con mucha confianza. No sos un asistente, sos un colega.
@@ -88,7 +93,7 @@ Reglas:
 5. Usá emoticones ocasionalmente. Respuestas breves como en un chat de celular.
 Usuario dice: ${userText}`
                 }],
-                max_tokens: 150
+                max_tokens: GROQ.MAX_TOKENS
             })
         });
         const data = await response.json();
@@ -106,94 +111,166 @@ Usuario dice: ${userText}`
 export const ChatProvider = ({ children }) => {
     const navigate = useNavigate();
 
-    const [userName, setUserNameState] = useState(
-        () => loadFromStorage('cracks_user', '')
-    );
-
-    const [messages, setMessages] = useState(() => {
-        const savedUser = loadFromStorage('cracks_user', '');
-        const parsed = loadFromStorage('cracks_messages', null);
-        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) return parsed;
-        return initialMessages(savedUser || 'Usuario');
-    });
-
-    const [unreadCounts, setUnreadCounts] = useState(() => {
-        const saved = loadFromStorage('cracks_unread', null);
-        if (saved) return saved;
-        const msgs = loadFromStorage('cracks_messages', null)
-            || initialMessages(loadFromStorage('cracks_user', 'Usuario'));
-        return buildUnreadCounts(msgs);
-    });
-
-    const [reactions, setReactions] = useState(
-        () => loadFromStorage('cracks_reactions', {})
-    );
-
+    const [currentUser, setCurrentUserState] = useState(() => loadFromStorage(STORAGE_KEYS.CURRENT_USER, null));
+    const [userName, setUserNameState] = useState(() => loadFromStorage(STORAGE_KEYS.USER, ''));
+    const [contacts, setContacts] = useState([]);
+    const [groups, setGroups] = useState([]);
+    const [messages, setMessages] = useState({});
+    const [unreadCounts, setUnreadCounts] = useState(() => loadFromStorage(STORAGE_KEYS.UNREAD, {}));
+    const [reactions, setReactions] = useState(() => loadFromStorage(STORAGE_KEYS.REACTIONS, {}));
     const [isTyping, setIsTyping] = useState(null);
-    const contacts = contactsData;
 
-    useEffect(() => { saveToStorage('cracks_messages', messages); }, [messages]);
-    useEffect(() => { saveToStorage('cracks_unread', unreadCounts); }, [unreadCounts]);
-    useEffect(() => { saveToStorage('cracks_reactions', reactions); }, [reactions]);
+    // Cache: id del contacto (user) -> id de la conversacion privada
+    const conversationMapRef = useRef({});
 
-    const resetUserSession = (name) => {
-        const cleanName = String(name).trim();
-        const freshMsgs = initialMessages(cleanName);
-        const freshUnread = buildUnreadCounts(freshMsgs);
-        setUserNameState(cleanName);
-        saveToStorage('cracks_user', cleanName);
-        setMessages(freshMsgs);
-        setUnreadCounts(freshUnread);
+    useEffect(() => { saveToStorage(STORAGE_KEYS.UNREAD, unreadCounts); }, [unreadCounts]);
+    useEffect(() => { saveToStorage(STORAGE_KEYS.REACTIONS, reactions); }, [reactions]);
+
+    // Trae los contactos del usuario desde la API
+    const loadContacts = useCallback(async () => {
+        try {
+            const list = await apiListContacts();
+            setContacts(list.map(mapContact));
+        } catch (err) {
+            console.error('No se pudieron cargar los contactos:', err.message);
+        }
+    }, []);
+
+    const loadGroups = useCallback(async () => {
+        try {
+            const list = await apiListGroups();
+            setGroups(list.map(mapGroup));
+        } catch (err) {
+            console.error('No se pudieron cargar los grupos:', err.message);
+        }
+    }, []);
+
+    // Carga contactos y grupos al montar si ya hay sesion iniciada (fetch en el montaje)
+    useEffect(() => {
+        if (!getToken()) return;
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        loadContacts();
+        loadGroups();
+    }, [loadContacts, loadGroups]);
+
+    const setCurrentUser = (user) => {
+        setCurrentUserState(user);
+        saveToStorage(STORAGE_KEYS.CURRENT_USER, user);
+        const name = user?.display_name || '';
+        setUserNameState(name);
+        saveToStorage(STORAGE_KEYS.USER, name);
     };
+
+    const searchUsers = useCallback((query) => apiSearchUsers(query), []);
+
+    const addContact = useCallback(async (userId, alias) => {
+        await apiAddContact(userId, alias);
+        await loadContacts();
+    }, [loadContacts]);
+
+    // Asegura la conversacion privada con un contacto y devuelve su id (cacheado)
+    const ensureConversation = useCallback(async (contactUserId) => {
+        let convId = conversationMapRef.current[contactUserId];
+        if (!convId) {
+            const conversation = await openPrivateConversation(contactUserId);
+            convId = conversation._id;
+            conversationMapRef.current[contactUserId] = convId;
+        }
+        return convId;
+    }, []);
+
+    // Abre / recarga un chat: trae los mensajes persistidos de la API
+    const openConversation = useCallback(async (contactUserId) => {
+        try {
+            const convId = await ensureConversation(contactUserId);
+            const apiMessages = await apiGetMessages(convId);
+            setMessages(prev => ({
+                ...prev,
+                [contactUserId]: apiMessages.map(m => mapMessage(m, currentUser?.id))
+            }));
+        } catch (err) {
+            console.error('No se pudo abrir el chat:', err.message);
+        }
+    }, [ensureConversation, currentUser]);
 
     const markAsRead = useCallback((contactId) =>
         setUnreadCounts(prev => ({ ...prev, [contactId]: 0 })), []);
 
     const logout = () => {
-        ['cracks_user', 'cracks_messages', 'cracks_unread', 'cracks_reactions']
-            .forEach(k => localStorage.removeItem(k));
+        clearToken();
+        Object.values(STORAGE_KEYS).forEach(k => localStorage.removeItem(k));
+        conversationMapRef.current = {};
+        setContacts([]);
+        setGroups([]);
+        setMessages({});
+        setUnreadCounts({});
+        setCurrentUserState(null);
+        setUserNameState('');
         navigate('/');
     };
 
-    const sendMessage = (contactId, userText) => {
-        const contact = contacts.find(c => c.id_usuario === contactId);
+    const sendMessage = useCallback(async (contactUserId, text) => {
+        const contact = contacts.find(c => String(c.id_usuario) === String(contactUserId));
         if (!contact) return;
 
-        const newMessage = {
-            id: Date.now(),
-            text: userText,
-            author: userName,
-            time: formatTime(new Date()),
-            status: 'sent'
-        };
+        try {
+            const convId = await ensureConversation(contactUserId);
 
-        setMessages(prev => ({
-            ...prev,
-            [contactId]: [...(prev[contactId] || []), newMessage]
-        }));
-        setIsTyping(contactId);
+            // 1) Persisto mi mensaje
+            const myMsg = await apiSendMessage(convId, text);
+            setMessages(prev => ({
+                ...prev,
+                [contactUserId]: [...(prev[contactUserId] || []), mapMessage(myMsg, currentUser?.id)]
+            }));
 
-        setTimeout(() => {
-            getAIResponse(contact, userName, userText).then(responseText => {
-                const reply = {
-                    id: Date.now() + 1,
-                    text: responseText,
-                    author: contact.name,
-                    time: formatTime(new Date()),
-                    status: 'read'
-                };
-                setMessages(prev => {
-                    const updated = (prev[contactId] || []).map(m =>
-                        String(m.author).trim().toLowerCase() === String(userName).trim().toLowerCase()
-                            ? { ...m, status: 'read' } : m
-                    );
-                    return { ...prev, [contactId]: [...updated, reply] };
-                });
-                setUnreadCounts(prev => ({ ...prev, [contactId]: (prev[contactId] || 0) + 1 }));
+            // 2) Si el contacto es un crack (bot): genero la respuesta con IA y la persisto
+            if (contact.es_bot) {
+                setIsTyping(contactUserId);
+                const replyText = await getAIResponse(contact, userName, text);
+                const botMsg = await apiSendBotReply(convId, replyText);
+                setMessages(prev => ({
+                    ...prev,
+                    [contactUserId]: [...(prev[contactUserId] || []), mapMessage(botMsg, currentUser?.id)]
+                }));
                 setIsTyping(null);
-            });
-        }, 3000);
-    };
+            }
+        } catch (err) {
+            console.error('No se pudo enviar el mensaje:', err.message);
+            setIsTyping(null);
+        }
+    }, [contacts, currentUser, userName, ensureConversation]);
+
+    // ── Grupos ──────────────────────────────────────────────
+    const createGroup = useCallback(async (name, memberIds) => {
+        const group = await apiCreateGroup(name, memberIds);
+        await loadGroups();
+        return mapGroup(group);
+    }, [loadGroups]);
+
+    // Abre / recarga el chat de un grupo (los mensajes van por su conversation_id)
+    const openGroupChat = useCallback(async (groupId, conversationId) => {
+        try {
+            const apiMessages = await apiGetMessages(conversationId);
+            setMessages(prev => ({
+                ...prev,
+                [groupId]: apiMessages.map(m => mapMessage(m, currentUser?.id))
+            }));
+        } catch (err) {
+            console.error('No se pudo abrir el grupo:', err.message);
+        }
+    }, [currentUser]);
+
+    const sendGroupMessage = useCallback(async (groupId, conversationId, text) => {
+        try {
+            const msg = await apiSendMessage(conversationId, text);
+            setMessages(prev => ({
+                ...prev,
+                [groupId]: [...(prev[groupId] || []), mapMessage(msg, currentUser?.id)]
+            }));
+        } catch (err) {
+            console.error('No se pudo enviar al grupo:', err.message);
+        }
+    }, [currentUser]);
 
     const toggleReaction = (contactId, msgId, emoji) => {
         setReactions(prev => {
@@ -229,12 +306,7 @@ export const ChatProvider = ({ children }) => {
             reader.onload = (e) => {
                 try {
                     const data = JSON.parse(e.target.result);
-                    if (data.messages) setMessages(data.messages);
                     if (data.reactions) setReactions(data.reactions);
-                    if (data.userName) {
-                        setUserNameState(data.userName);
-                        saveToStorage('cracks_user', data.userName);
-                    }
                     resolve('Backup restaurado correctamente');
                 } catch { reject('Archivo inválido'); }
             };
@@ -247,8 +319,9 @@ export const ChatProvider = ({ children }) => {
             contacts,
             messages,
             sendMessage,
+            currentUser,
             userName,
-            setUserName: resetUserSession,
+            setCurrentUser,
             isTyping,
             logout,
             unreadCounts,
@@ -257,6 +330,15 @@ export const ChatProvider = ({ children }) => {
             getReactions,
             exportBackup,
             importBackup,
+            loadContacts,
+            searchUsers,
+            addContact,
+            openConversation,
+            groups,
+            loadGroups,
+            createGroup,
+            openGroupChat,
+            sendGroupMessage,
         }}>
             {children}
         </ChatContext.Provider>

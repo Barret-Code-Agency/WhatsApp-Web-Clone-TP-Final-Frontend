@@ -23,7 +23,10 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]', argsIgnorePattern: '^[A-Z_]' }],
+      // El hook (useX) vive junto a su Provider: es el patron estandar de React.
+      // only-export-components es una pista de HMR (dev), no de correctitud -> warning.
+      'react-refresh/only-export-components': 'warn',
     },
   },
 ])

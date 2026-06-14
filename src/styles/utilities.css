@@ -1,0 +1,64 @@
+/* ──────────────────────────────────────────────────────────────
+   Clases utilitarias y overrides puntuales.
+   Reemplazan inline styles con valores literales por clases que usan
+   tokens del sistema (cero hardcode en el JSX). Los inline styles que
+   quedan en la app son SOLO dinamicos (ej. width: `${progress}%`).
+   ────────────────────────────────────────────────────────────── */
+
+/* Genericos */
+.u-hidden {
+    display: none;
+}
+
+.u-link-reset {
+    text-decoration: none;
+}
+
+/* ThemePanel — disparador del modal de temas */
+.tp__trigger {
+    cursor: pointer;
+    width: 100%;
+    display: block;
+}
+
+/* StatusScreen — avatar de "mi estado" */
+.status-img--mine {
+    width: var(--size-avatar-status);
+    height: var(--size-avatar-status);
+}
+
+/* Sidebar — overrides de layout en paneles */
+.sidebar-multimedia-empty {
+    margin-top: var(--space-20);
+}
+
+.sidebar-multimedia-title {
+    color: var(--wa-text-primary);
+    margin-top: var(--space-5);
+}
+
+.sidebar-multimedia-sub {
+    padding: 0 var(--space-10);
+    text-align: center;
+}
+
+.sidebar-nuevochat-item {
+    padding: 0 var(--space-3);
+}
+
+.sidebar-nuevochat-avatar {
+    margin-left: 0;
+}
+
+.sidebar-nuevochat-info {
+    padding: 0 var(--space-3);
+}
+
+.sidebar-menu-anchor {
+    position: relative;
+}
+
+.contact-link {
+    text-decoration: none;
+    color: inherit;
+}

@@ -3,10 +3,10 @@ import React from 'react';
 import '../../styles/SmartHints.css';
 
 // ── Detectores ──────────────
-const EMAIL_RE = /([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-z]{2,})/gi;
+const EMAIL_RE = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,})/gi;
 const URL_RE = /https?:\/\/[^\s]+/gi;
-const DATE_RE = /\b(?:hoy|mañana|el\s+\d{1,2}[\/\-]\d{1,2}(?:[\/\-]\d{2,4})?|\d{1,2}[\/\-]\d{1,2}(?:[\/\-]\d{2,4})?)(?:\s+a\s+las?\s+\d{1,2}(?::\d{2})?(?:\s*hs?\.?)?)?/gi;
-const PHONE_RE = /(?:\+?[\d\s\-\(\)]{9,15})/g;
+const DATE_RE = /\b(?:hoy|mañana|el\s+\d{1,2}[/-]\d{1,2}(?:[/-]\d{2,4})?|\d{1,2}[/-]\d{1,2}(?:[/-]\d{2,4})?)(?:\s+a\s+las?\s+\d{1,2}(?::\d{2})?(?:\s*hs?\.?)?)?/gi;
+const PHONE_RE = /(?:\+?[\d\s\-()]{9,15})/g;
 const ATTACH_RE = /(te mando|mando|adjunto|archivo|pdf|documento|el doc|el pdf|el archivo)/i;
 
 export function detectHints(text) {

@@ -1,0 +1,24 @@
+// Estados y modos de la UI centralizados (sin magic strings)
+
+export const APP_STEP = {
+    LOADING: 'loading',
+    WHATSAPP: 'whatsapp',
+    LOGIN_FORM: 'login-form',
+    MAIN: 'main'
+}
+
+export const AUTH_MODE = {
+    LOGIN: 'login',
+    REGISTER: 'register',
+    VERIFY: 'verify'
+}
+
+export const MESSAGE_STATUS = {
+    SENT: 'sent',
+    READ: 'read'
+}
+
+export const THEME = {
+    DARK: 'dark',
+    LIGHT: 'light'
+}

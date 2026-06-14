@@ -50,6 +50,22 @@
     flex-shrink: 0;
 }
 
+.cw__header-avatar--group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--wa-bg-input);
+    font-size: 20px;
+}
+
+.cw__bubble-author {
+    display: block;
+    font-size: var(--font-xs);
+    font-weight: var(--weight-semibold);
+    color: var(--wa-green);
+    margin-bottom: 2px;
+}
+
 .cw__header-info {
     display: flex;
     flex-direction: column;
