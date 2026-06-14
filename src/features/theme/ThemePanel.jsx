@@ -87,7 +87,7 @@ const ThemePanel = () => {
         <>
             <span
                 onClick={e => { e.stopPropagation(); setOpen(true); }}
-                style={{ cursor: 'pointer', width: '100%', display: 'block' }}
+                className="tp__trigger"
             >
                 Temas y apariencia
             </span>

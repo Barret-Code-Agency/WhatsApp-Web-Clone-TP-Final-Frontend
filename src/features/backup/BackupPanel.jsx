@@ -41,7 +41,7 @@ export default function BackupPanel() {
                 ref={fileRef}
                 type="file"
                 accept="application/json"
-                style={{ display: 'none' }}
+                className="u-hidden"
                 onChange={handleImport}
             />
 

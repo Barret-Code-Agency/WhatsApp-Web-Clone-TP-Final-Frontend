@@ -393,7 +393,7 @@
     gap: 20px;
     padding: 20px 16px;
     background-color: var(--wa-bg-sidebar);
-    height: 68px;
+    min-height: 68px;
 }
 
 .filter-panel-header h2 {

@@ -1,12 +1,42 @@
 import React, { useState } from 'react';
-import { UserRound } from 'lucide-react';
-import CountrySelector from './CountrySelector';
-import { COUNTRIES } from '../../data/countries';
+import { UserRound, Search } from 'lucide-react';
+import { useChat } from '../../context/ChatContext';
 import '../../styles/AddContactPanel.css';
 
 const AddContactPanel = ({ onClose }) => {
-    const [selectedCountry, setSelectedCountry] = useState(COUNTRIES[0]);
-    const [syncOn, setSyncOn] = useState(false);
+    const { searchUsers, addContact } = useChat();
+    const [query, setQuery] = useState('');
+    const [results, setResults] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [addedIds, setAddedIds] = useState([]);
+    const [searched, setSearched] = useState(false);
+
+    const handleSearch = async (e) => {
+        e.preventDefault();
+        if (query.trim().length < 2) return;
+        setError('');
+        setLoading(true);
+        setSearched(true);
+        try {
+            const users = await searchUsers(query.trim());
+            setResults(users);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleAdd = async (user) => {
+        setError('');
+        try {
+            await addContact(user._id);
+            setAddedIds(prev => [...prev, user._id]);
+        } catch (err) {
+            setError(err.message);
+        }
+    };
 
     return (
         <section className="add-panel animate-slide-in">
@@ -17,69 +47,61 @@ const AddContactPanel = ({ onClose }) => {
                 <h2 className="add-panel__title">Nuevo contacto</h2>
             </div>
 
-            {/* Avatar */}
-            <div className="add-panel__avatar">
-                <div className="add-panel__avatar-circle">
-                    <UserRound size={40} />
-                </div>
-            </div>
-
-            {/* Formulario */}
-            <div className="add-panel__form">
-
+            {/* Buscador */}
+            <form className="add-panel__form" onSubmit={handleSearch}>
                 <div className="add-panel__field">
-                    <span className="add-panel__icon">👤</span>
+                    <span className="add-panel__icon"><Search size={18} /></span>
                     <div className="add-panel__input-wrapper">
-                        <input type="text" placeholder="Nombre" className="add-panel__input" />
-                    </div>
-                </div>
-
-                <div className="add-panel__field add-panel__field--indented">
-                    <div className="add-panel__input-wrapper">
-                        <input type="text" placeholder="Apellido" className="add-panel__input" />
-                    </div>
-                </div>
-
-                <div className="add-panel__field add-panel__field--phone">
-                    <span className="add-panel__icon">📞</span>
-                    <div className="add-panel__phone-row">
-                        <CountrySelector
-                            countries={COUNTRIES}
-                            selected={selectedCountry}
-                            onChange={setSelectedCountry}
+                        <input
+                            type="text"
+                            placeholder="Buscar por nombre o email"
+                            className="add-panel__input"
+                            value={query}
+                            onChange={e => setQuery(e.target.value)}
+                            autoFocus
                         />
-                        <div className="add-panel__phone-number">
-                            <span className="add-panel__phone-label">Teléfono</span>
-                            <input
-                                type="text"
-                                className="add-panel__phone-input"
-                                placeholder="Número"
-                            />
+                    </div>
+                </div>
+                <button
+                    type="submit"
+                    className="add-panel__save-btn"
+                    disabled={loading || query.trim().length < 2}
+                >
+                    {loading ? 'Buscando...' : 'Buscar'}
+                </button>
+            </form>
+
+            {error && <p className="add-panel__error">{error}</p>}
+
+            {/* Resultados */}
+            <div className="add-panel__results">
+                {searched && !loading && !error && results.length === 0 && (
+                    <p className="add-panel__empty">No se encontraron usuarios.</p>
+                )}
+
+                {results.map(user => {
+                    const added = addedIds.includes(user._id);
+                    return (
+                        <div key={user._id} className="add-panel__result">
+                            <div className="add-panel__result-avatar">
+                                {user.avatar_url
+                                    ? <img src={user.avatar_url} alt={user.display_name} />
+                                    : <UserRound size={22} />}
+                            </div>
+                            <div className="add-panel__result-info">
+                                <div className="add-panel__result-name">{user.display_name}</div>
+                                <div className="add-panel__result-email">{user.email}</div>
+                            </div>
+                            <button
+                                className="add-panel__save-btn add-panel__result-btn"
+                                onClick={() => handleAdd(user)}
+                                disabled={added}
+                            >
+                                {added ? 'Agregado' : 'Agregar'}
+                            </button>
                         </div>
-                    </div>
-                </div>
-
-                <div className="add-panel__sync">
-                    <span className="add-panel__sync-icon">🔄</span>
-                    <div className="add-panel__sync-content">
-                        <p className="add-panel__sync-title">Sincronizar contacto con el teléfono</p>
-                        <p className="add-panel__sync-desc">
-                            Se añadirá este contacto a la libreta de contactos de tu teléfono.
-                        </p>
-                    </div>
-                    <div
-                        className={`add-panel__toggle ${syncOn ? 'add-panel__toggle--on' : ''}`}
-                        onClick={() => setSyncOn(v => !v)}
-                    >
-                        <div className="add-panel__toggle-circle" />
-                    </div>
-                </div>
-
-            </div>
-
-            {/* Footer */}
-            <div className="add-panel__footer">
-                <button className="add-panel__save-btn">GUARDAR</button>
+                    );
+                })}
             </div>
 
         </section>

@@ -58,7 +58,7 @@ const WhatsAppLogin = () => {
                         href="https://get.microsoft.com/installer/download/9NKSQGP7F2NH?cid=website_cta_psi"
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{ textDecoration: 'none' }}
+                        className="u-link-reset"
                     >
                         <button className="btn-download-pill">
                             Descargar <Download size={14} />

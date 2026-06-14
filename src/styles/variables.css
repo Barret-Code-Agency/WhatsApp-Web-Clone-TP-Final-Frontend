@@ -168,3 +168,42 @@
     --wa-green-legacy: #26d466;
     --wa-dark: #111b21;
 }
+
+/* ──────────────────────────────────────────────────────────────
+   Sistema de tokens — escalas (espaciado, radios, tipografia, semanticos)
+   Regla: cero hardcode en CSS/JSX. Todo valor sale de una variable.
+   ────────────────────────────────────────────────────────────── */
+:root {
+    /* Espaciado (base 4px) */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-20: 80px;
+
+    /* Radios */
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-circle: 50%;
+
+    /* Tipografia */
+    --font-xs: 0.8rem;
+    --font-sm: 0.85rem;
+    --font-md: 0.9rem;
+    --font-base: 1rem;
+    --weight-semibold: 600;
+    --weight-bold: 700;
+
+    /* Colores semanticos */
+    --wa-error: #ff4d4f;
+    --wa-success: var(--wa-green-online);
+
+    /* Tamanos de avatar */
+    --size-avatar-sm: 42px;
+    --size-avatar-status: 52px;
+}
