@@ -20,11 +20,8 @@ import { mapContact } from '../mappers/contactMapper.js';
 import { mapMessage } from '../mappers/messageMapper.js';
 import { mapGroup } from '../mappers/groupMapper.js';
 import { STORAGE_KEYS } from '../constants/storage.js';
-import { GROQ } from '../constants/groq.js';
 
 const ChatContext = createContext();
-
-const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 
 const loadFromStorage = (key, fallback) => {
     try {
@@ -44,67 +41,6 @@ const saveToStorage = (key, value) => {
         localStorage.setItem(key, JSON.stringify(value));
     } catch {
         console.warn("No se pudo guardar en localStorage.");
-    }
-};
-
-const getFallbackResponse = (userName, userText = '') => {
-    const respuestas = [
-        `¡Qué grande ${userName}! Me gustó eso de: "${userText}". Sos un crack.`,
-        "Totalmente de acuerdo contigo, ¡hay que seguir metiéndole!",
-        `Interesante lo que decís, ${userName}... lo voy a tener en cuenta.`,
-        "¡Jajaja, Amigo, qué genio! Me hacés reír mucho. Nos vemos pronto.",
-        "Ahora justo estoy por empezar a entrenar, ¡hablamos en un rato!",
-        `¡Esa es la actitud, ${userName}! La disciplina lo es todo.`,
-        `¡Un abrazo grande, ${userName}! Gracias por el aguante.`,
-        `Exactamente eso hablaba el otro día con el equipo, ${userName}. Estás en lo cierto.`,
-        "No es fácil llegar a la cima, pero con gente como vos apoyando, todo es mejor.",
-        `Me dejas pensando con eso de "${userText}"... Tenés visión de juego, amigo.`,
-        "¡Grande! La humildad y el trabajo duro no se negocian. ¡Seguimos!",
-        "Perdona que tarde en responder, estamos concentrados para lo que viene. ¡Vamos con todo!",
-        `Me sirve mucho tu mensaje, ${userName}. Siempre es bueno escuchar otra opinión.`,
-        "¡Eso es! Paso a paso, pero siempre hacia adelante. No hay secretos.",
-        `¡Qué fenómeno! Si todos pensaran como vos, ${userName}, el mundo sería otra cosa.`,
-        "Gracias por estar en las buenas y en las malas. Eso es lo que vale de verdad.",
-        `Uff, qué buena frase me tiraste. Me la guardo para la charla de hoy. ¡Un crack!`
-    ];
-    return respuestas[Math.floor(Math.random() * respuestas.length)];
-};
-
-const getAIResponse = async (contact, userName, userText) => {
-    const bioContext = contact.estado_bio || "Deportista profesional de alto rendimiento.";
-    try {
-        const response = await fetch(GROQ.URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${GROQ_API_KEY}`
-            },
-            body: JSON.stringify({
-                model: GROQ.MODEL,
-                messages: [{
-                    role: "system",
-                    content: `Actúa como ${contact.name}, deportista famoso. Estás hablando por WhatsApp con un amigo cercano de toda la vida llamado ${userName}.
-Bio: ${bioContext}
-Reglas:
-1. Tono informal, relajado y con mucha confianza. No sos un asistente, sos un colega.
-2. Español rioplatense obligatorio: voseo (vení, sentí, mirá), pero sin che y malas palabras.
-3. Respondé con lógica sobre tu carrera deportiva. Si te preguntan algo personal, seguile la corriente con humor.
-4. Si te pasan un email, teléfono o fecha, decí que lo vas a agendar.
-5. Usá emoticones ocasionalmente. Respuestas breves como en un chat de celular.
-Usuario dice: ${userText}`
-                }],
-                max_tokens: GROQ.MAX_TOKENS
-            })
-        });
-        const data = await response.json();
-        if (!response.ok) {
-            console.error('Groq error:', data.error?.message);
-            return getFallbackResponse(userName, userText);
-        }
-        return data.choices[0].message.content;
-    } catch (err) {
-        console.error('Fetch error:', err);
-        return getFallbackResponse(userName, userText);
     }
 };
 
@@ -223,11 +159,10 @@ export const ChatProvider = ({ children }) => {
                 [contactUserId]: [...(prev[contactUserId] || []), mapMessage(myMsg, currentUser?.id)]
             }));
 
-            // 2) Si el contacto es un crack (bot): genero la respuesta con IA y la persisto
+            // 2) Si el contacto es un crack (bot): el backend genera la respuesta con IA y la persiste
             if (contact.es_bot) {
                 setIsTyping(contactUserId);
-                const replyText = await getAIResponse(contact, userName, text);
-                const botMsg = await apiSendBotReply(convId, replyText);
+                const botMsg = await apiSendBotReply(convId, text);
                 setMessages(prev => ({
                     ...prev,
                     [contactUserId]: [...(prev[contactUserId] || []), mapMessage(botMsg, currentUser?.id)]
@@ -238,7 +173,7 @@ export const ChatProvider = ({ children }) => {
             console.error('No se pudo enviar el mensaje:', err.message);
             setIsTyping(null);
         }
-    }, [contacts, currentUser, userName, ensureConversation]);
+    }, [contacts, currentUser, ensureConversation]);
 
     // ── Grupos ──────────────────────────────────────────────
     const createGroup = useCallback(async (name, memberIds) => {

@@ -21,7 +21,8 @@ export const sendMessage = async (conversationId, content) => {
     return data.message
 }
 
-// Persiste la respuesta IA de un crack (el backend la guarda con el bot como emisor)
+// Pide al backend que el crack responda mi mensaje: la IA corre en el servidor
+// (la API key nunca llega al navegador) y devuelve el mensaje del bot ya persistido.
 export const sendBotReply = async (conversationId, content) => {
     const data = await api.post(`/api/conversations/${conversationId}/bot-reply`, { content })
     return data.message
