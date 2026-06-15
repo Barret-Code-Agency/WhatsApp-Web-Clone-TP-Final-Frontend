@@ -16,6 +16,7 @@ import {
     listGroups as apiListGroups,
     createGroup as apiCreateGroup
 } from '../services/groupService.js';
+import { updateProfile as apiUpdateProfile } from '../services/userService.js';
 import { mapContact } from '../mappers/contactMapper.js';
 import { mapMessage } from '../mappers/messageMapper.js';
 import { mapGroup } from '../mappers/groupMapper.js';
@@ -95,6 +96,13 @@ export const ChatProvider = ({ children }) => {
         const name = user?.display_name || '';
         setUserNameState(name);
         saveToStorage(STORAGE_KEYS.USER, name);
+    };
+
+    // Actualiza el perfil propio (nombre, estado, foto) y refresca el usuario en sesion
+    const updateProfile = async (data) => {
+        const updated = await apiUpdateProfile(data);
+        setCurrentUser(updated);
+        return updated;
     };
 
     const searchUsers = useCallback((query) => apiSearchUsers(query), []);
@@ -257,6 +265,7 @@ export const ChatProvider = ({ children }) => {
             currentUser,
             userName,
             setCurrentUser,
+            updateProfile,
             isTyping,
             logout,
             unreadCounts,

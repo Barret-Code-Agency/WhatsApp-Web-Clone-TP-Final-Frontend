@@ -1,0 +1,115 @@
+.profile-panel__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    padding: var(--space-6) var(--space-5);
+    overflow-y: auto;
+}
+
+.profile-panel__avatar-wrap {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    margin: var(--space-2) auto var(--space-4);
+}
+
+.profile-panel__avatar {
+    width: 160px;
+    height: 160px;
+    border-radius: var(--radius-circle);
+    overflow: hidden;
+    background-color: var(--wa-bg-hover);
+    color: var(--wa-text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-panel__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-panel__camera {
+    position: absolute;
+    right: var(--space-2);
+    bottom: var(--space-2);
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: var(--radius-circle);
+    background-color: var(--wa-green-fixed);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.profile-panel__file {
+    display: none;
+}
+
+.profile-panel__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.profile-panel__label {
+    font-size: var(--font-sm);
+    font-weight: var(--weight-semibold);
+    color: var(--wa-green-fixed);
+}
+
+.profile-panel__field input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--wa-border-input);
+    padding: var(--space-2) 0;
+    font-size: var(--font-base);
+    color: var(--wa-text-primary);
+    outline: none;
+}
+
+.profile-panel__field input:focus {
+    border-bottom-color: var(--wa-green-fixed);
+}
+
+.profile-panel__field input:disabled {
+    color: var(--wa-text-secondary);
+}
+
+.profile-panel__save {
+    margin-top: var(--space-2);
+    padding: var(--space-3);
+    border: none;
+    border-radius: var(--radius-lg);
+    background-color: var(--wa-green-fixed);
+    color: var(--white);
+    font-size: var(--font-base);
+    font-weight: var(--weight-semibold);
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.profile-panel__save:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.profile-panel__error {
+    margin: 0;
+    text-align: center;
+    font-size: var(--font-sm);
+    color: var(--wa-error);
+}
+
+.profile-panel__saved {
+    margin: 0;
+    text-align: center;
+    font-size: var(--font-sm);
+    color: var(--wa-success);
+}

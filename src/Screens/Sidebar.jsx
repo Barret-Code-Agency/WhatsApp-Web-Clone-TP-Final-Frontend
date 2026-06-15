@@ -13,6 +13,7 @@ import ThemePanel from '../features/theme/ThemePanel.jsx';
 import BackupPanel from '../features/backup/BackupPanel.jsx';
 import FavoritesIllustration from '../components/conmon/FavoritesIlustration.jsx';
 import StatusScreen from './StatusScreen.jsx';
+import ProfilePanel from '../components/chat/ProfilePanel.jsx';
 
 import '../styles/Sidebar.css';
 
@@ -73,6 +74,7 @@ const PanelHeader = ({ title, onClose }) => (
 );
 
 const NavRail = ({ activeNav, setActiveNav }) => {
+    const { currentUser } = useChat();
     const navItems = [
         { key: 'chats', Icon: ChatIcon, title: 'Chats' },
         { key: 'estados', Icon: StatusIcon, title: 'Estados' },
@@ -109,7 +111,7 @@ const NavRail = ({ activeNav, setActiveNav }) => {
                     onClick={() => setActiveNav('perfil')}
                     title="Perfil">
                     <div className="nav-user-avatar1">
-                        <img src="/images/avatar.avif" alt="User Profile"></img>
+                        <img src={currentUser?.avatar_url || '/images/avatar.avif'} alt="Mi perfil"></img>
                     </div>
                 </div>
             </div>
@@ -220,29 +222,6 @@ const AjustesPanel = ({ onClose, onLogout }) => (
     </div>
 );
 
-const PerfilPanel = ({ onClose, userName }) => (
-    <div className="side-full-panel animate-slide-in">
-        <PanelHeader title="Perfil" onClose={onClose} />
-        <div className="perfil-hero">
-            <div className="perfil-avatar-big">
-                <img src="/images/avatar.avif" alt="Mi perfil" />
-            </div>
-            <div className="perfil-field">
-                <label>Nombre</label>
-                <input type="text" defaultValue={userName || 'Usuario'} />
-            </div>
-            <div className="perfil-field">
-                <label>Info</label>
-                <input type="text" defaultValue="¡Hola! Estoy usando WhatsApp." />
-            </div>
-            <div className="perfil-field">
-                <label>Teléfono</label>
-                <input type="text" defaultValue="+54 9 11 0000-0000" disabled />
-            </div>
-        </div>
-    </div>
-);
-
 const NuevoChatPanel = ({ onClose }) => {
     const { contacts } = useChat();
     return (
@@ -276,6 +255,7 @@ const MenuTresPuntos = ({ onClose }) => (
 
 // ── BottomNav: reemplaza al NavRail en mobile-------------
 const BottomNav = ({ activeNav, setActiveNav }) => {
+    const { currentUser } = useChat();
     const allItems = [
         { key: 'chats', Icon: ChatIcon, title: 'Chats' },
         { key: 'estados', Icon: StatusIcon, title: 'Estados' },
@@ -297,7 +277,7 @@ const BottomNav = ({ activeNav, setActiveNav }) => {
                     {Icon
                         ? <Icon color={ic(activeNav === key)} />
                         : <div className="nav-user-avatar2">
-                            <img src="/images/avatar.avif" alt="Perfil"></img>
+                            <img src={currentUser?.avatar_url || '/images/avatar.avif'} alt="Perfil"></img>
                         </div>
                     }
                 </div>
@@ -312,7 +292,7 @@ const BottomNav = ({ activeNav, setActiveNav }) => {
 const Sidebar = ({ onLogout, onNewGroup }) => {
     const location = useLocation();
     const activeId = (location.pathname.match(/\/(?:chat|group)\/(.+)/) || [])[1] || null;
-    const { contacts, groups, unreadCounts, userName } = useChat();
+    const { contacts, groups, unreadCounts } = useChat();
 
     const [activeFilter, setActiveFilter] = useState('Todos');
     const [activeNav, setActiveNav] = useState('chats');
@@ -349,7 +329,7 @@ const Sidebar = ({ onLogout, onNewGroup }) => {
             comunidad: <ComunidadesPanel onClose={closePanel} />,
             multimedia: <MultimediaPanel onClose={closePanel} />,
             ajustes: <AjustesPanel onClose={closePanel} onLogout={onLogout} />,
-            perfil: <PerfilPanel onClose={closePanel} userName={userName} />,
+            perfil: <ProfilePanel onClose={closePanel} />,
         };
         return (
             <aside className="sidebar-root">
