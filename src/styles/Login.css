@@ -106,7 +106,7 @@
 }
 
 .wa-button-primary {
-    background-color: #00a884;
+    background-color: var(--wa-green-fixed);
     color: #ffffff;
     border: none;
     padding: 12px 30px;
@@ -164,7 +164,7 @@
     right: 0;
     bottom: 0;
     background-color: white;
-    border: 2px solid #25D366;
+    border: 2px solid var(--wa-green-fixed);
     transition: .3s;
     border-radius: 30px;
 }
@@ -175,7 +175,7 @@
     width: 20px;
     left: 2px;
     bottom: 1px;
-    background-color: #25D366;
+    background-color: var(--wa-green-fixed);
     transition: .3s;
     border-radius: 50%;
     display: flex;
@@ -222,6 +222,7 @@ input:checked+.wa-custom-slider .wa-circle {
     cursor: pointer;
     text-decoration: underline;
     font-size: var(--font-md);
+    margin-top: var(--space-4);
     transition: color 0.2s;
 }
 
