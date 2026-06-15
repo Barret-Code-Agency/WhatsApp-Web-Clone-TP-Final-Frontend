@@ -219,10 +219,22 @@ input:checked+.wa-custom-slider .wa-circle {
 .login-switch {
     background: none;
     border: none;
-    color: inherit;
     cursor: pointer;
     text-decoration: underline;
     font-size: var(--font-md);
+    transition: color 0.2s;
+}
+
+.login-dark .login-switch {
+    color: #8696a0;
+}
+
+.login-light .login-switch {
+    color: #667781;
+}
+
+.login-switch:hover {
+    color: #00a884;
 }
 
 .login-center {
