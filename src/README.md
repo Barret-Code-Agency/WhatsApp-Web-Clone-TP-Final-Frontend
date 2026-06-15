@@ -321,13 +321,13 @@ npm run build
 npm run preview
 ```
 
-### Variables de entorno (opcional)
+### Variables de entorno
 
-Si querés usar tu propia API key de Groq:
+El front solo necesita saber dónde está la API. La generación con IA (Groq) corre en el backend, así que la API key no vive en el navegador.
 
 ```bash
 # .env
-VITE_GROQ_API_KEY=gsk_tu_api_key_aqui
+VITE_API_URL=http://localhost:3000
 ```
 
 ---
