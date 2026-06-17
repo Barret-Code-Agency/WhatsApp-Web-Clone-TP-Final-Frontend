@@ -12,7 +12,7 @@ function WelcomeScreen({ onOpenAddContact }) {
                         <div className="welcome-main-image" />
                     </div>
 
-                    <h2 className="welcome-title">Descarga WhatsApp para Windows</h2>
+                    <h2 className="welcome-title">Descargá CracksApp para Windows</h2>
 
                     <p className="welcome-description">
                         Obtén funciones adicionales, como llamadas y videollamadas, compartir pantalla y más..

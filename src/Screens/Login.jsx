@@ -161,7 +161,7 @@ const Login = ({ onLogin }) => {
         <main className={`login-screen-wrapper ${isDarkMode ? 'login-dark' : 'login-light'}`}>
             <div className="login-card">
                 <div className="login-intro">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WA" className="login-logo-small" />
+                    <img src="/images/cracks-logo.svg" alt="CracksApp" className="login-logo-small" />
                     <h2>{mode === AUTH_MODE.REGISTER ? 'Crear cuenta' : mode === AUTH_MODE.VERIFY ? 'Verificá tu cuenta' : 'Iniciar sesión'}</h2>
                     <p>
                         {mode === AUTH_MODE.REGISTER
