@@ -126,7 +126,7 @@ const FavoritosPanel = ({ onClose }) => (
             <div className="filter-panel-icon"><FavoritesIllustration width={180} /></div>
             <p>Añade chats a Favoritos</p>
             <p className="filter-panel-sub">
-                Haz que sea fácil encontrar a las personas y los grupos más importantes en WhatsApp.
+                Haz que sea fácil encontrar a las personas y los grupos más importantes en CracksApp.
             </p>
         </div>
     </div>
@@ -352,7 +352,7 @@ const Sidebar = ({ onLogout, onNewGroup }) => {
                 {activeFilter !== 'Favoritos' && activeFilter !== 'Plus' && !showNuevoChatPanel && (
                     <>
                         <header className="chats-header">
-                            <h1>WhatsApp</h1>
+                            <h1>CracksApp</h1>
                             <div className="header-actions">
                                 <div className="header-action-btn"
                                     onClick={() => setShowNuevoChatPanel(true)}
@@ -427,11 +427,11 @@ const Sidebar = ({ onLogout, onNewGroup }) => {
                             <div className="footer-content">
                                 <div className="footer-icon-container">
                                     <div className="wa-mini-logo">
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WA Logo" />
+                                        <img src="/images/cracks-logo.svg" alt="CracksApp" />
                                     </div>
                                 </div>
                                 <div className="footer-text">
-                                    <p className="footer-title">Obtener WhatsApp para Windows</p>
+                                    <p className="footer-title">Obtener CracksApp para Windows</p>
                                 </div>
                             </div>
                         </footer>

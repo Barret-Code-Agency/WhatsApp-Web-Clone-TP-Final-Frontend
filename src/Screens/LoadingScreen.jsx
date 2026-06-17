@@ -28,13 +28,13 @@ const LoadingScreen = ({ onFinished }) => {
             <div className="loading-content">
                 <div className="logo-container-fill">
                     <img
-                        src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+                        src="/images/cracks-logo.svg"
                         alt="WA Gray"
                         className="logo-bg"
                     />
                     <div className="logo-fill-mask" style={{ height: `${progress}%` }}>
                         <img
-                            src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+                            src="/images/cracks-logo.svg"
                             alt="WA Green"
                             className="logo-fg"
                         />
@@ -42,7 +42,7 @@ const LoadingScreen = ({ onFinished }) => {
                 </div>
 
                 <div className="loading-bar-wrapper">
-                    <p className="loading-text">Instalando WhatsApp de Cracks...</p>
+                    <p className="loading-text">Instalando CracksApp...</p>
                     <div className="progress-bar-base">
                         <div className="progress-fill-active" style={{ width: `${progress}%` }} />
                     </div>

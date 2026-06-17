@@ -2,7 +2,7 @@
 
 export const APP_STEP = {
     LOADING: 'loading',
-    WHATSAPP: 'whatsapp',
+    LANDING: 'landing',
     LOGIN_FORM: 'login-form',
     MAIN: 'main'
 }

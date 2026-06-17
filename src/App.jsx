@@ -55,14 +55,14 @@ function AppContent() {
     const handleLogout = () => {
         clearToken();
         setIsAuthenticated(false);
-        setStep(APP_STEP.WHATSAPP);
+        setStep(APP_STEP.LANDING);
         navigate('/', { replace: true });
     };
 
     if (step === APP_STEP.LOADING)
-        return <LoadingScreen onFinished={() => setStep(getToken() ? APP_STEP.MAIN : APP_STEP.WHATSAPP)} />;
+        return <LoadingScreen onFinished={() => setStep(getToken() ? APP_STEP.MAIN : APP_STEP.LANDING)} />;
 
-    if (step === APP_STEP.WHATSAPP)
+    if (step === APP_STEP.LANDING)
         return (
             <div className="qr-wrapper-clickable" onClick={() => setStep(APP_STEP.LOGIN_FORM)}>
                 <WhatsAppLogin />
