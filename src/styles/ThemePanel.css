@@ -12,6 +12,7 @@
     background-color: var(--wa-bg-panel);
     border-radius: 12px;
     width: 420px;
+    max-width: 92vw;
     max-height: 90vh;
     overflow-y: auto;
     padding: 0 0 20px;
