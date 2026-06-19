@@ -4,7 +4,7 @@ Clon funcional de WhatsApp Web con IA integrada, sistema de temas dinámico y si
 ________________________________________
 Descripción del Proyecto
 
-WhatsApp Web Clone es una aplicación de alto nivel que replica la experiencia visual y funcional de la plataforma original. Construida en React, utiliza una arquitectura moderna basada en contextos y enrutamiento dinámico para gestionar un flujo de usuario complejo que incluye desde pantallas de carga hasta chats inteligentes con 50 deportistas famosos.
+WhatsApp Web Clone es una aplicación de alto nivel que replica la experiencia visual y funcional de la plataforma original. Construida en React, utiliza una arquitectura moderna basada en contextos y enrutamiento dinámico para gestionar un flujo de usuario complejo que incluye desde pantallas de carga hasta chats inteligentes con 12 deportistas famosos.
 
 ## Demo y Screenshots
 
@@ -69,7 +69,7 @@ ________________________________________
 Funcionalidades Principales
 
 Sistema de Chat con IA
-•	Motor de IA (Groq): Integración con Llama 3.3 70B. Los 50 deportistas (Messi, Ronaldo, Hamilton, etc.) responden con su personalidad real y en voseo rioplatense.
+•	Motor de IA (Groq): Integración con Llama 3.3 70B. Los 12 deportistas (Messi, Ronaldo, Hamilton, etc.) responden con su personalidad real y en voseo rioplatense.
 •	Detección de Intenciones: El chat identifica y formatea automáticamente:
     o	Emails, Fechas, Teléfonos, Adjuntos y URLs.
 •	Interactividad: Panel de emoticones, ticks de mensaje (Enviado/Leído) y scroll automático.
