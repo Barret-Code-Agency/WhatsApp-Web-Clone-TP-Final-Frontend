@@ -1,10 +1,15 @@
-WhatsApp Web Clone — TP Final Frontend
-Clon funcional de WhatsApp Web con IA integrada, sistema de temas dinámico y simulación de ecosistema completo.
-🚀 Ver Deploy en Vercel · 📂 Repositorio GitHub · 🌐 Demo en Vivo
-________________________________________
-Descripción del Proyecto
+# CracksApp — TP Final Frontend
 
-WhatsApp Web Clone es una aplicación de alto nivel que replica la experiencia visual y funcional de la plataforma original. Construida en React, utiliza una arquitectura moderna basada en contextos y enrutamiento dinámico para gestionar un flujo de usuario complejo que incluye desde pantallas de carga hasta chats inteligentes con 12 deportistas famosos.
+Cliente web en **React** de CracksApp: una app de mensajería instantánea con **12 deportistas de elite** que responden con IA. El frontend consume la **API REST del backend** (Node + Express + MongoDB): autenticación con JWT, mensajes persistidos y respuestas de IA generadas en el servidor.
+
+🚀 Deploy en Vercel · 📂 Repositorio GitHub · 🌐 Demo en Vivo
+
+________________________________________
+## Descripción del Proyecto
+
+CracksApp replica la experiencia visual de un cliente de mensajería web moderno y la conecta a un **backend propio**. Construida en React con una arquitectura basada en contextos, una **capa de servicios** que habla con la API y enrutamiento dinámico, gestiona el flujo completo: desde la pantalla de carga y el login hasta los chats con los cracks.
+
+A diferencia de una maqueta estática, las funciones centrales son **reales y están respaldadas por el backend**: registro con verificación por email, login con JWT, contactos, mensajería privada y grupal, y las respuestas de IA —que se generan en el servidor, de modo que la API key nunca llega al navegador—.
 
 ## Demo y Screenshots
 
@@ -15,13 +20,13 @@ WhatsApp Web Clone es una aplicación de alto nivel que replica la experiencia v
         <kbd>
           <img src="./public/images/Screenshots/Bienvenida.png" alt="Pantalla de Bienvenida" width="100%">
         </kbd>
-        <p><b>1. Bienvenida y Carga</b><br>Simulación de descarga con barra de progreso progresiva.</p>
+        <p><b>1. Bienvenida y Carga</b><br>Pantalla de carga con barra de progreso.</p>
       </td>
       <td align="center" width="50%">
         <kbd>
-          <img src="./public/images/Screenshots/SumulacionQR.png" alt="Simulación QR" width="100%">
+          <img src="./public/images/Screenshots/SumulacionQR.png" alt="Pantalla de Vinculación" width="100%">
         </kbd>
-        <p><b>2. Conexión QR</b><br>Interfaz de vinculación con links activos a soporte y descarga.</p>
+        <p><b>2. Vinculación</b><br>Pantalla de inicio con acceso al login.</p>
       </td>
     </tr>
     <tr>
@@ -29,13 +34,13 @@ WhatsApp Web Clone es una aplicación de alto nivel que replica la experiencia v
         <kbd>
           <img src="./public/images/Screenshots/Login.png" alt="Pantalla de Login" width="100%">
         </kbd>
-        <p><b>3. Autenticación</b><br>Ingreso de usuario y selector de tema (Claro/Oscuro).</p>
+        <p><b>3. Autenticación</b><br>Registro / login real (JWT) y selector de tema.</p>
       </td>
       <td align="center" width="50%">
         <kbd>
           <img src="./public/images/Screenshots/Chats.png" alt="Panel de Chats" width="100%">
         </kbd>
-        <p><b>4. Panel de Chat</b><br>IA integrada con deportistas y detección de intenciones.</p>
+        <p><b>4. Panel de Chat</b><br>Chats con los cracks, IA generada en el backend.</p>
       </td>
     </tr>
   </table>
@@ -49,190 +54,120 @@ WhatsApp Web Clone es una aplicación de alto nivel que replica la experiencia v
 </div>
 
 ________________________________________
-Flujo de Usuario y Pantallas
+## Flujo de Usuario y Pantallas
 
-1. Pantalla de Bienvenida (Splash)
-•	Experiencia inmersiva: Pantalla de carga con doodles de fondo antes de acceder al sistema.
-•	Simulación de inicio: Efecto visual de llenado con barra de carga progresiva y logo animado.
+**1. Pantalla de Bienvenida (Splash)**
+- Pantalla de carga con doodles de fondo y barra de progreso animada antes de acceder al sistema.
 
-2. Conexión por QR
-•	Simulación de Sincronización: Interfaz interactiva de WhatsApp Web Sync.
-•	Acceso a Recursos Externos: Botones y links 100% operativos:
-o	Descargar App
-o	¿Necesitas ayuda? ↗
-o	Primeros pasos ↗
+**2. Pantalla de inicio**
+- Réplica visual de la vinculación, con el acceso al formulario de login.
 
-3. Autenticación y Preferencias
-•	Formulario de Login: Captura de nombre de usuario y contraseña (validación flexible para demo).
-•	Personalización: Selector de Modo Claro / Oscuro que redefine la estética de toda la App mediante variables CSS antes de montar los chats.
+**3. Autenticación y Preferencias**
+- **Login / Registro reales:** el formulario crea la cuenta (con verificación por email) o inicia sesión contra el backend, que devuelve un **JWT**.
+- **Personalización:** selector de modo Claro / Oscuro que redefine la estética de toda la app mediante variables CSS.
+
 ________________________________________
-Funcionalidades Principales
+## Funcionalidades Principales
 
-Sistema de Chat con IA
-•	Motor de IA (Groq): Integración con Llama 3.3 70B. Los 12 deportistas (Messi, Ronaldo, Hamilton, etc.) responden con su personalidad real y en voseo rioplatense.
-•	Detección de Intenciones: El chat identifica y formatea automáticamente:
-    o	Emails, Fechas, Teléfonos, Adjuntos y URLs.
-•	Interactividad: Panel de emoticones, ticks de mensaje (Enviado/Leído) y scroll automático.
+### Autenticación real (vía backend)
+- Registro con **verificación por email**, login que devuelve un **JWT**, y sesión persistida. El token viaja como `Authorization: Bearer <token>` en cada pedido a la API.
 
-Sidebar y Filtros Activos
-•	Gestión de Contactos: * Botón "Todos" y "No leídos" con filtrado en tiempo real.
-    o	Favoritos: Sección funcional (lista vacía por defecto).
-    o	Añadir Contactos: Menú activo para expandir la agenda.
-•	Ordenamiento Dinámico: Los chats con mensajes no leídos se posicionan automáticamente en la parte superior.
+### Chat con IA
+- Los **12 deportistas** (Messi, Ronaldo, Hamilton, etc.) responden con su personalidad y en voseo rioplatense. La respuesta la **genera el backend** con Groq (Llama 3.3 70B); el cliente solo la pide y la muestra (la API key vive en el servidor).
+- **Detección de intenciones:** el chat identifica y formatea automáticamente emails, fechas, teléfonos, adjuntos y URLs.
+- **Interactividad:** panel de emojis, reacciones, ticks de mensaje (enviado/leído) y scroll automático.
 
-Estados y Multimedia
-•	Estados con Video: 7 deportistas con clips de YouTube y barra de progreso animada.
-•	Lógica de "Visto": El borde del estado cambia de verde (nuevo) a gris (visto) tras visualizar la historia.
-•	Multimedia: Panel activo de visualización de archivos.
+### CRUD desde la interfaz
+- **Contactos:** buscar y agregar usuarios, **editar** (alias) y **eliminar** desde el menú del chat.
+- **Grupos:** crear, **editar** (nombre) y **eliminar**, con sus miembros.
+- **Perfil:** editar nombre, estado y **foto** (se sube y se guarda en el backend).
 
-Nav Rail (Navegación Lateral)
-Icono	Panel	Estado	Descripción
-🗨	Chats	    ✅	Navegación entre hilos de conversación.
-👁	Estados	    ✅	Historias con video y detección de visualización.
-📢	Canales	    ✅	Visualización de noticias deportivas (solo vista).
-👥	Comunidades	✅	Panel estático de grupos masivos (solo vista).
-🖼	Multimedia	 ✅	Galería de archivos compartidos (solo vista).
-⚙️	Ajustes	    ✅	Temas, Apariencia y Exportar/Importar chats.
-👤	Perfil	    ✅	Visualización de información del usuario.
+### Personalización y extras
+- Tema **claro/oscuro** + 5 presets de color (variables CSS). Exportar/importar backup de chats. Selector de emojis. Responsive de 320px a 2000px.
+
+## Nav Rail (Navegación Lateral)
+
+| Icono | Panel | Estado | Descripción |
+|---|---|---|---|
+| 🗨 | Chats | ✅ Funcional | Conversaciones privadas y grupales (datos del backend) |
+| 👤 | Perfil | ✅ Funcional | Editar nombre, estado y foto |
+| ⚙️ | Ajustes | ✅ Funcional | Temas, apariencia y exportar/importar |
+| 👁 | Estados | 🟡 Maqueta | Reproduce la estética original; no consume la API |
+| 📢 | Canales | 🟡 Maqueta | Solo vista |
+| 👥 | Comunidades | 🟡 Maqueta | Solo vista |
+| 🖼 | Multimedia | 🟡 Maqueta | Solo vista |
+
+> Las secciones marcadas como **maqueta** reproducen la estética de un cliente de mensajería para dar contexto visual; las funciones centrales (auth, contactos, mensajería e IA) están conectadas al backend.
+
 ________________________________________
-Tecnologías y Librerías
+## Tecnologías y Librerías
 
-Core	React 18, Vite, React Router DOM 6
-Estilos	CSS Variables (Temas Dinámicos), CSS Modules, Lucide React
-IA & API	Groq Cloud (Llama 3.3), YouTube Embed API
-Deploy	Vercel (CI/CD Automático)
-________________________________________
-Arquitectura del Proyecto
+| Capa | Tecnología |
+|---|---|
+| Core | React 19, Vite, React Router DOM 7 |
+| Estilos | Variables CSS (temas dinámicos), Lucide React |
+| Datos | Capa de servicios (`fetch` + Bearer JWT) que consume la API de CracksApp |
+| IA | Groq (Llama 3.3 70B) — generada en el **servidor** |
+| Backend | Node.js + Express + MongoDB (repositorio aparte) |
+| Deploy | Vercel (CI/CD automático) |
 
-El proyecto utiliza Context API para centralizar la lógica en dos grandes pilares:
-1.	ChatContext: Maneja el estado global de mensajes, la lógica de la IA y el contador de no leídos.
-2.	ThemeContext: Controla los 5 presets de color y el toggle Global Claro/Oscuro mediante la manipulación de :root.
+## Arquitectura del Proyecto
+
+El proyecto usa **Context API + una capa de servicios**:
+
+1. **ChatContext** — estado global de contactos, grupos y mensajes; orquesta las llamadas a la API a través de la capa de servicios.
+2. **ThemeContext** — los 5 presets de color y el toggle claro/oscuro mediante la manipulación de `:root`.
+3. **services/** — un wrapper de `fetch` (agrega el `Bearer` y maneja errores) + un servicio por recurso (auth, users, contacts, groups, conversations).
+4. **mappers/** — adaptan la forma de los datos del backend a la que consumen los componentes (si la API cambia un campo, se toca solo el mapper).
 
 ```
-└── 📁public
-    └── 📁avatar
-        ├── avatar.avif
-    └── 📁images
-        ├── avatar.avif
-        ├── claro-sports.jpg
-        ├── community-dark.png
-        ├── community-light.png
-        ├── Doodles-oscuro.jpg
-        ├── Doodles-oscuro.png
-        ├── espn.jpg
-        ├── F1.enc
-        ├── fifa.jpg
-        ├── icono-menu.png
-        ├── logo-ft.png
-        ├── moto-gp.jpg
-        ├── nba.jpg
-        ├── pc-phone-light.png
-        ├── pc-phone.png
-        ├── qr-whatsapp.png
-        ├── tyc.enc
-        ├── wa.png
-        ├── wa2.png
-    └── vite.svg
+src/
+ ├─ components/chat/   ChatWindow, GroupChatWindow, AddContactPanel, NewGroupPanel, ProfilePanel, NavRail…
+ ├─ context/           ChatContext (estado + API), ThemeContext (temas)
+ ├─ services/          api (fetch + Bearer) + auth / users / contacts / groups / conversations
+ ├─ mappers/           adaptan los datos del backend a la vista
+ ├─ Screens/           Login, Sidebar, ChatPage, LoadingScreen, WelcomeScreen…
+ ├─ features/          theme, backup, smart-hints
+ ├─ constants/         claves de storage y modos de UI (sin magic strings)
+ ├─ config/            environment (VITE_API_URL)
+ └─ styles/            variables.css (tokens) + estilos por componente
 ```
 
-```
-└── 📁src
-    └── 📁assets
-        ├── react.svg
-    └── 📁components
-        └── 📁chat
-            ├── AddContactPanel.jsx
-            ├── ChatWindow.jsx
-            ├── CountrySelector.jsx
-            ├── NavRail.jsx
-        └── 📁conmon
-            ├── ArchiveIcon.jsx
-            ├── ChannelIcon.jsx
-            ├── ChatIcon.jsx
-            ├── ComunityIcon.jsx
-            ├── ContactIcon.jsx
-            ├── FavoritesIlustration.jsx
-            ├── LoadingScreen.jsx
-            ├── MultimediaIcon.jsx
-            ├── NavIconButton.jsx
-            ├── SettingsIcon.jsx
-            ├── StatusIcon.jsx
-            ├── UserIcon.jsx
-    └── 📁context
-        ├── ChatContext.jsx
-        ├── ThemeContext.jsx
-    └── 📁data
-        ├── ContactItem.jsx
-        ├── contactsData.jsx
-        ├── countries.js
-        ├── initialMessages.js
-        ├── MainLayout.js
-    └── 📁features
-        └── 📁backup
-            ├── BackupPanel.jsx
-        └── 📁smart-hints
-            ├── SmartHints.jsx
-        └── 📁theme
-            ├── ThemePanel.jsx
-    └── 📁Screens
-        ├── ChatPage.jsx
-        ├── ContactScreen.jsx
-        ├── LoadingScreen.jsx
-        ├── Login.jsx
-        ├── ProfileScreen.jsx
-        ├── Sidebar.jsx
-        ├── StatusScreen.jsx
-        ├── WelcomeScreen.jsx
-        ├── WhatsAppLogin.jsx
-    └── 📁styles
-        ├── AddContactPanel.css
-        ├── App.css
-        ├── BackupPanel.css
-        ├── ChatWindow.css
-        ├── ContactScreen.css
-        ├── emoji-additions.css
-        ├── index.css
-        ├── LoadingScreen.css
-        ├── Login.css
-        ├── Sidebar.css
-        ├── SmartHints.css
-        ├── StatusScreen.css
-        ├── ThemePanel.css
-        ├── variables.css
-        ├── WelcomeScreen.css
-        ├── WhatsAppLogin.css
-    ├── App.jsx
-    ├── main.jsx
-    ├── README.md
-    └── vercel.json
-```
+## Integración con el backend
+
+- El cliente consume la **API REST de CracksApp**; la URL se configura con `VITE_API_URL`.
+- **Autenticación con JWT** (`Authorization: Bearer <token>`), guardado en `localStorage`.
+- Los mensajes se **persisten en el backend**; cada chat abierto se refresca por **polling** cada 4 segundos (WebSockets sería el paso siguiente para tiempo real).
+
 ________________________________________
-Cumplimiento de Requisitos
+## Cumplimiento de Requisitos (Frontend)
 
-| Despliegue en Vercel | ✅ | CI/CD automático desde rama `main` |
+| Requisito | Estado | Detalle |
+|---|---|---|
+| Despliegue en Vercel | ✅ | CI/CD automático desde `main` |
 | Código en GitHub | ✅ | Repositorio público |
 | README.md | ✅ | Este documento |
-| Responsivo 320px–2000px | ✅ | CSS Grid + Flexbox + media queries |
-| Estilos accesibles | ✅ | Contraste WCAG AA, paleta oficial WhatsApp |
-| Desarrollado en React | ✅ | React 18 con hooks modernos |
-| Uso de estados | ✅ | `useState` en todos los componentes interactivos |
-| Uso de contextos | ✅ | `ChatContext` (mensajes, IA, no leídos) + `ThemeContext` (temas) |
-| React Router DOM | ✅ | Rutas: `/`, `/loading`, `/chat`, `/chat/:id_usuario` |
-| Al menos 1 formulario | ✅ | LoginPage con validación y submit |
+| Responsivo 320px–2000px | ✅ | Flexbox + media queries con tokens CSS |
+| Estilos accesibles | ✅ | HTML semántico, contraste AA, paleta coherente |
+| Desarrollado en React | ✅ | React 19 con hooks modernos |
+| Uso de estados | ✅ | `useState` en los componentes interactivos |
+| Uso de contextos | ✅ | `ChatContext` (datos + API) + `ThemeContext` (temas) |
+| React Router DOM | ✅ | Rutas: `/`, `/chat/:id_usuario`, `/group/:group_id` |
+| Al menos 1 formulario | ✅ | Login / Registro con validación y submit |
 | Uso de componentes | ✅ | +15 componentes reutilizables |
-| Al menos 2 páginas | ✅ | LoginPage, LoadingScreen, ChatPage |
-| Parámetros de ruta | ✅ | `useParams()` en ChatPage para `id_usuario` |
-| Principios DRY/YAGNI/KISS | ✅ | Helpers centralizados, sin código duplicado |
-________________________________________
-Dificultades y Soluciones
+| Parámetros de ruta | ✅ | `useParams()` para el id de la conversación |
+| Principios DRY/YAGNI/KISS | ✅ | Capa de servicios y mappers, sin código duplicado |
 
-•	Límites de API: Se migró de Gemini a Groq para garantizar respuestas rápidas y sin límites de cuota diarios para la demo.
-•	Identificación de Contactos: Se implementaron IDs numéricos para evitar errores de encoding con nombres de deportistas con tildes.
-•	Sincronización de Estados: Se utilizó un sistema de seguimiento de IDs vistos para alternar las clases de CSS del anillo de historias.
 ________________________________________
-Autor
+## Dificultades y Soluciones
 
-Fernando Delgado Estudiante de Frontend — UTN Facultad Regional Buenos Aires
+- **API key de la IA expuesta:** la generación de respuestas se movió del cliente al **backend**, de modo que la key de Groq vive solo en el servidor y nunca llega al navegador.
+- **Datos siempre frescos:** se centralizó el acceso a la API en una capa de servicios + mappers, así un cambio en la API se absorbe en un solo lugar.
+- **Actualización de mensajes:** se resolvió con polling cada 4s sobre el endpoint de mensajes, simple y suficiente para el alcance del trabajo.
+
 ________________________________________
-TP Final — Curso de Frontend Desarrollado con ❤️ y más de 160 horas de ☕
+## Autor
 
+**Fernando Delgado** — Estudiante — UTN Facultad Regional Buenos Aires
+
+TP Final · Desarrollado con ❤️ y mucho ☕
