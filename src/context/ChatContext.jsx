@@ -4,7 +4,9 @@ import { getToken, clearToken } from '../services/api.js';
 import {
     listContacts as apiListContacts,
     searchUsers as apiSearchUsers,
-    addContact as apiAddContact
+    addContact as apiAddContact,
+    updateContact as apiUpdateContact,
+    removeContact as apiRemoveContact
 } from '../services/contactService.js';
 import {
     openPrivateConversation,
@@ -14,7 +16,9 @@ import {
 } from '../services/conversationService.js';
 import {
     listGroups as apiListGroups,
-    createGroup as apiCreateGroup
+    createGroup as apiCreateGroup,
+    updateGroup as apiUpdateGroup,
+    deleteGroup as apiDeleteGroup
 } from '../services/groupService.js';
 import { updateProfile as apiUpdateProfile } from '../services/userService.js';
 import { mapContact } from '../mappers/contactMapper.js';
@@ -112,6 +116,18 @@ export const ChatProvider = ({ children }) => {
         await loadContacts();
     }, [loadContacts]);
 
+    // Edita un contacto (alias) y refresca la lista
+    const editContact = useCallback(async (contactId, changes) => {
+        await apiUpdateContact(contactId, changes);
+        await loadContacts();
+    }, [loadContacts]);
+
+    // Elimina un contacto y refresca la lista
+    const deleteContact = useCallback(async (contactId) => {
+        await apiRemoveContact(contactId);
+        await loadContacts();
+    }, [loadContacts]);
+
     // Asegura la conversacion privada con un contacto y devuelve su id (cacheado)
     const ensureConversation = useCallback(async (contactUserId) => {
         let convId = conversationMapRef.current[contactUserId];
@@ -188,6 +204,18 @@ export const ChatProvider = ({ children }) => {
         const group = await apiCreateGroup(name, memberIds);
         await loadGroups();
         return mapGroup(group);
+    }, [loadGroups]);
+
+    // Edita un grupo (nombre / descripcion) y refresca la lista
+    const editGroup = useCallback(async (groupId, changes) => {
+        await apiUpdateGroup(groupId, changes);
+        await loadGroups();
+    }, [loadGroups]);
+
+    // Elimina un grupo y refresca la lista
+    const deleteGroup = useCallback(async (groupId) => {
+        await apiDeleteGroup(groupId);
+        await loadGroups();
     }, [loadGroups]);
 
     // Abre / recarga el chat de un grupo (los mensajes van por su conversation_id)
@@ -277,10 +305,14 @@ export const ChatProvider = ({ children }) => {
             loadContacts,
             searchUsers,
             addContact,
+            editContact,
+            deleteContact,
             openConversation,
             groups,
             loadGroups,
             createGroup,
+            editGroup,
+            deleteGroup,
             openGroupChat,
             sendGroupMessage,
         }}>

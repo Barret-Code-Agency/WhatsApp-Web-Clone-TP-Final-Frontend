@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useChat } from '../../context/ChatContext';
-import { Send, Check, CheckCheck, Smile } from 'lucide-react';
+import { Send, Check, CheckCheck, Smile, MoreVertical, Pencil, Trash2, X } from 'lucide-react';
 import SmartHints from '../../features/smart-hints/SmartHints';
 import EmojiPicker from 'emoji-picker-react';
 import { MESSAGE_STATUS } from '../../constants/ui.js';
@@ -17,8 +17,14 @@ const ChatWindow = ({ isMobile, onBack }) => {
     const scrollRef = useRef(null);
     const inputPickerRef = useRef(null);
     const reactionPickerRef = useRef(null);
+    const menuRef = useRef(null);
 
-    const { contacts, messages, sendMessage, isTyping, markAsRead, toggleReaction, getReactions, openConversation } = useChat();
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [modalMode, setModalMode] = useState(null); // 'edit' | 'delete' | null
+    const [aliasInput, setAliasInput] = useState('');
+    const [busy, setBusy] = useState(false);
+
+    const { contacts, messages, sendMessage, isTyping, markAsRead, toggleReaction, getReactions, openConversation, editContact, deleteContact } = useChat();
 
     const contact = useMemo(
         () => (contacts || []).find(c => String(c.id_usuario) === String(id_usuario)),
@@ -55,6 +61,8 @@ const ChatWindow = ({ isMobile, onBack }) => {
                 setShowInputPicker(false);
             if (reactionPickerRef.current && !reactionPickerRef.current.contains(e.target))
                 setReactionMsgId(null);
+            if (menuRef.current && !menuRef.current.contains(e.target))
+                setMenuOpen(false);
         };
         document.addEventListener('mousedown', handler);
         return () => document.removeEventListener('mousedown', handler);
@@ -84,6 +92,42 @@ const ChatWindow = ({ isMobile, onBack }) => {
         setReactionMsgId(null);
     };
 
+    const openEdit = () => {
+        setAliasInput(contact.name);
+        setModalMode('edit');
+        setMenuOpen(false);
+    };
+
+    const openDelete = () => {
+        setModalMode('delete');
+        setMenuOpen(false);
+    };
+
+    const handleSaveEdit = async () => {
+        const alias = aliasInput.trim();
+        if (!alias) return;
+        setBusy(true);
+        try {
+            await editContact(contact.contact_id, { alias });
+            setModalMode(null);
+        } catch (err) {
+            console.error('No se pudo editar el contacto:', err.message);
+        } finally {
+            setBusy(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        setBusy(true);
+        try {
+            await deleteContact(contact.contact_id);
+            onBack();
+        } catch (err) {
+            console.error('No se pudo eliminar el contacto:', err.message);
+            setBusy(false);
+        }
+    };
+
     if (!contact) return <div className="cw__error">Contacto no encontrado</div>;
 
     return (
@@ -102,6 +146,22 @@ const ChatWindow = ({ isMobile, onBack }) => {
                     <span className="cw__header-status">
                         {isTyping === id_usuario ? 'escribiendo...' : contact.conection}
                     </span>
+                </div>
+
+                <div className="cw__header-actions" ref={menuRef}>
+                    <button className="cw__menu-btn" onClick={() => setMenuOpen(v => !v)} title="Opciones">
+                        <MoreVertical size={20} />
+                    </button>
+                    {menuOpen && (
+                        <div className="cw__menu">
+                            <button className="cw__menu-item" onClick={openEdit}>
+                                <Pencil size={16} /> Editar contacto
+                            </button>
+                            <button className="cw__menu-item cw__menu-item--danger" onClick={openDelete}>
+                                <Trash2 size={16} /> Eliminar contacto
+                            </button>
+                        </div>
+                    )}
                 </div>
             </header>
 
@@ -217,6 +277,49 @@ const ChatWindow = ({ isMobile, onBack }) => {
                     </button>
                 </form>
             </footer>
+
+            {modalMode && (
+                <div className="cw__modal-overlay" onClick={() => !busy && setModalMode(null)}>
+                    <div className="cw__modal" onClick={e => e.stopPropagation()}>
+                        <button className="cw__modal-close" onClick={() => !busy && setModalMode(null)} title="Cerrar">
+                            <X size={18} />
+                        </button>
+                        {modalMode === 'edit' ? (
+                            <>
+                                <h3 className="cw__modal-title">Editar contacto</h3>
+                                <input
+                                    className="cw__modal-input"
+                                    type="text"
+                                    value={aliasInput}
+                                    maxLength={40}
+                                    placeholder="Nombre del contacto"
+                                    onChange={e => setAliasInput(e.target.value)}
+                                    autoFocus
+                                />
+                                <div className="cw__modal-actions">
+                                    <button className="cw__modal-btn" onClick={() => setModalMode(null)} disabled={busy}>Cancelar</button>
+                                    <button className="cw__modal-btn cw__modal-btn--primary" onClick={handleSaveEdit} disabled={busy}>
+                                        {busy ? 'Guardando...' : 'Guardar'}
+                                    </button>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <h3 className="cw__modal-title">Eliminar contacto</h3>
+                                <p className="cw__modal-text">
+                                    ¿Querés eliminar a {contact.name} de tus contactos? También se borra la conversación.
+                                </p>
+                                <div className="cw__modal-actions">
+                                    <button className="cw__modal-btn" onClick={() => setModalMode(null)} disabled={busy}>Cancelar</button>
+                                    <button className="cw__modal-btn cw__modal-btn--danger" onClick={handleDelete} disabled={busy}>
+                                        {busy ? 'Eliminando...' : 'Eliminar'}
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

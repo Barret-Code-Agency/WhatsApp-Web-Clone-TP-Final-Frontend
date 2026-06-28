@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { Send } from 'lucide-react';
+import { Send, MoreVertical, Pencil, Trash2, X } from 'lucide-react';
 import { useChat } from '../../context/ChatContext';
 import { getGroup } from '../../services/groupService.js';
 import '../../styles/ChatWindow.css';
@@ -9,8 +9,13 @@ const GroupChatWindow = ({ isMobile, onBack }) => {
     const { group_id } = useParams();
     const [text, setText] = useState('');
     const [members, setMembers] = useState([]);
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [modalMode, setModalMode] = useState(null); // 'edit' | 'delete' | null
+    const [nameInput, setNameInput] = useState('');
+    const [busy, setBusy] = useState(false);
     const scrollRef = useRef(null);
-    const { groups, messages, openGroupChat, sendGroupMessage } = useChat();
+    const menuRef = useRef(null);
+    const { groups, messages, openGroupChat, sendGroupMessage, editGroup, deleteGroup } = useChat();
 
     const group = useMemo(
         () => (groups || []).find(g => String(g.group_id) === String(group_id)),
@@ -26,6 +31,16 @@ const GroupChatWindow = ({ isMobile, onBack }) => {
         if (!group_id) return;
         getGroup(group_id).then(data => setMembers(data.members || [])).catch(() => { });
     }, [group_id]);
+
+    // Cierra el menu al hacer click fuera
+    useEffect(() => {
+        const handler = (e) => {
+            if (menuRef.current && !menuRef.current.contains(e.target))
+                setMenuOpen(false);
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, []);
 
     // Carga los mensajes del grupo y los refresca por polling
     useEffect(() => {
@@ -46,6 +61,42 @@ const GroupChatWindow = ({ isMobile, onBack }) => {
         setText('');
     };
 
+    const openEdit = () => {
+        setNameInput(group.name);
+        setModalMode('edit');
+        setMenuOpen(false);
+    };
+
+    const openDelete = () => {
+        setModalMode('delete');
+        setMenuOpen(false);
+    };
+
+    const handleSaveEdit = async () => {
+        const name = nameInput.trim();
+        if (!name) return;
+        setBusy(true);
+        try {
+            await editGroup(group.group_id, { name });
+            setModalMode(null);
+        } catch (err) {
+            console.error('No se pudo editar el grupo:', err.message);
+        } finally {
+            setBusy(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        setBusy(true);
+        try {
+            await deleteGroup(group.group_id);
+            onBack();
+        } catch (err) {
+            console.error('No se pudo eliminar el grupo:', err.message);
+            setBusy(false);
+        }
+    };
+
     if (!group) return <div className="cw__error">Grupo no encontrado</div>;
 
     const memberNames = members.map(m => m.user_id?.display_name).filter(Boolean).join(', ');
@@ -64,6 +115,22 @@ const GroupChatWindow = ({ isMobile, onBack }) => {
                     <span className="cw__header-status">
                         {memberNames || `${members.length} miembros`}
                     </span>
+                </div>
+
+                <div className="cw__header-actions" ref={menuRef}>
+                    <button className="cw__menu-btn" onClick={() => setMenuOpen(v => !v)} title="Opciones">
+                        <MoreVertical size={20} />
+                    </button>
+                    {menuOpen && (
+                        <div className="cw__menu">
+                            <button className="cw__menu-item" onClick={openEdit}>
+                                <Pencil size={16} /> Editar grupo
+                            </button>
+                            <button className="cw__menu-item cw__menu-item--danger" onClick={openDelete}>
+                                <Trash2 size={16} /> Eliminar grupo
+                            </button>
+                        </div>
+                    )}
                 </div>
             </header>
 
@@ -94,6 +161,49 @@ const GroupChatWindow = ({ isMobile, onBack }) => {
                     </button>
                 </form>
             </footer>
+
+            {modalMode && (
+                <div className="cw__modal-overlay" onClick={() => !busy && setModalMode(null)}>
+                    <div className="cw__modal" onClick={e => e.stopPropagation()}>
+                        <button className="cw__modal-close" onClick={() => !busy && setModalMode(null)} title="Cerrar">
+                            <X size={18} />
+                        </button>
+                        {modalMode === 'edit' ? (
+                            <>
+                                <h3 className="cw__modal-title">Editar grupo</h3>
+                                <input
+                                    className="cw__modal-input"
+                                    type="text"
+                                    value={nameInput}
+                                    maxLength={40}
+                                    placeholder="Nombre del grupo"
+                                    onChange={e => setNameInput(e.target.value)}
+                                    autoFocus
+                                />
+                                <div className="cw__modal-actions">
+                                    <button className="cw__modal-btn" onClick={() => setModalMode(null)} disabled={busy}>Cancelar</button>
+                                    <button className="cw__modal-btn cw__modal-btn--primary" onClick={handleSaveEdit} disabled={busy}>
+                                        {busy ? 'Guardando...' : 'Guardar'}
+                                    </button>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <h3 className="cw__modal-title">Eliminar grupo</h3>
+                                <p className="cw__modal-text">
+                                    ¿Querés eliminar el grupo {group.name}? Se borra para todos sus miembros.
+                                </p>
+                                <div className="cw__modal-actions">
+                                    <button className="cw__modal-btn" onClick={() => setModalMode(null)} disabled={busy}>Cancelar</button>
+                                    <button className="cw__modal-btn cw__modal-btn--danger" onClick={handleDelete} disabled={busy}>
+                                        {busy ? 'Eliminando...' : 'Eliminar'}
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
