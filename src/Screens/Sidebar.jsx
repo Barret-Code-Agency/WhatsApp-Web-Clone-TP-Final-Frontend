@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useChat } from '../context/ChatContext';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { MessageSquarePlus, EllipsisVertical, Search, X } from 'lucide-react';
 import { CANALES } from '../data/canalesData';
 import ChannelIcon from '../components/conmon/ChannelIcon.jsx';
@@ -224,15 +224,37 @@ const AjustesPanel = ({ onClose, onLogout }) => (
 
 const NuevoChatPanel = ({ onClose }) => {
     const { contacts } = useChat();
+    const navigate = useNavigate();
+    const [busqueda, setBusqueda] = useState('');
+
+    const abrirChat = (id) => {
+        navigate(`/chat/${id}`);
+        onClose();
+    };
+
+    const filtrados = contacts.filter(c =>
+        (c.name || '').toLowerCase().includes(busqueda.trim().toLowerCase())
+    );
+
     return (
         <div className="side-full-panel animate-slide-in">
             <PanelHeader title="Nuevo chat" onClose={onClose} />
             <div className="canales-search">
                 <Search size={16} color="var(--wa-text-secondary)" />
-                <input type="text" placeholder="Buscar contacto" />
+                <input
+                    type="text"
+                    placeholder="Buscar contacto"
+                    value={busqueda}
+                    onChange={e => setBusqueda(e.target.value)}
+                />
             </div>
-            {contacts.slice(0, 15).map(c => (
-                <div key={c.id_usuario} className="contact-item sidebar-nuevochat-item">
+            {filtrados.map(c => (
+                <div
+                    key={c.id_usuario}
+                    className="contact-item sidebar-nuevochat-item"
+                    onClick={() => abrirChat(c.id_usuario)}
+                    style={{ cursor: 'pointer' }}
+                >
                     <img src={c.evatar_url} alt={c.name} className="contact-avatar sidebar-nuevochat-avatar" />
                     <div className="contact-info sidebar-nuevochat-info">
                         <span className="contact-name">{c.name}</span>
