@@ -20,7 +20,7 @@
 
 .sh__chip:hover {
     background-color: rgba(0, 168, 132, 0.3);
-    border-color: #00a884;
+    border-color: var(--wa-green);
 }
 
 .sh__icon {
@@ -29,7 +29,7 @@
 }
 
 .sh__label {
-    color: #00a884;
+    color: var(--wa-green);
     font-size: 12px;
     font-weight: 500;
     white-space: nowrap;

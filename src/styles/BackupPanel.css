@@ -6,13 +6,13 @@
 }
 
 .bp__desc {
-    color: #8696a0;
+    color: var(--wa-text-secondary);
     font-size: 13px;
     line-height: 1.5;
 }
 
 .bp__desc code {
-    color: #00a884;
+    color: var(--wa-green);
     background: rgba(0, 168, 132, 0.1);
     padding: 1px 5px;
     border-radius: 4px;
@@ -36,14 +36,14 @@
 }
 
 .bp__btn--export {
-    background-color: #00a884;
-    color: #111b21;
+    background-color: var(--wa-green);
+    color: var(--wa-dark);
 }
 
 .bp__btn--import {
-    background-color: #2a3942;
-    color: #e9edef;
-    border: 1px solid #374045;
+    background-color: var(--wa-bg-input);
+    color: var(--wa-text-primary);
+    border: 1px solid var(--wa-card-border);
 }
 
 .bp__toast {
@@ -55,10 +55,10 @@
 
 .bp__toast--ok {
     background: rgba(0, 168, 132, 0.2);
-    color: #00a884;
+    color: var(--wa-green);
 }
 
 .bp__toast--error {
     background: rgba(234, 0, 56, 0.2);
-    color: #ea0038;
+    color: var(--wa-error);
 }

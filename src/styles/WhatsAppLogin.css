@@ -3,7 +3,7 @@
 html, body {
     margin: 0;
     padding: 0;
-    background: #fcf5eb;
+    background: var(--wa-login-screen-bg);
     overflow-x: hidden;
     height: auto;
 }
@@ -13,7 +13,7 @@ html, body {
 }
 
 .login-container {
-    background: #fcf5eb;
+    background: var(--wa-login-screen-bg);
     font-family: 'Inter', sans-serif;
     min-height: 100vh;
     height: auto;
@@ -50,7 +50,7 @@ html, body {
 }
 
 .download-banner {
-    background: #fff;
+    background: var(--white);
     border: 1px solid var(--wa-dark);
     border-radius: 23px;
     padding: 30px 55px;
@@ -83,7 +83,7 @@ html, body {
 }
 
 .btn-download-pill {
-    background-color: #25D366;
+    background-color: var(--wa-wa-green);
     border: 0.5px solid var(--wa-dark);
     padding: 15px 28px;
     border-radius: 30px;
@@ -93,11 +93,11 @@ html, body {
     gap: 12px;
     cursor: pointer;
     font-size: 16px;
-    color: #111b21;
+    color: var(--wa-login-text);
 }
 
 .log-card {
-    background: #fff;
+    background: var(--white);
     border: 1px solid var(--wa-dark);
     border-radius: 28px;
     padding: 30px;
@@ -129,7 +129,7 @@ html, body {
     margin-bottom: 20px;
     font-size: 18px;
     font-weight: 500;
-    color: #41525d;
+    color: var(--wa-wa-text-muted);
 }
 
 .step-num {
@@ -144,7 +144,7 @@ html, body {
 }
 
 .help-link {
-    color: #008069;
+    color: var(--wa-wa-green-dark);
     text-decoration: none;
     font-size: 14px;
     font-weight: 500;
@@ -188,7 +188,7 @@ html, body {
 .chevron-icon {
     display: flex;
     align-items: center;
-    color: #54656f;
+    color: var(--wa-avatar-bg);
 }
 
 .link-phone a:hover {
@@ -251,7 +251,7 @@ html, body {
     display: inline-flex;
     align-self: center;
     vertical-align: middle;
-    color: #8696a0;
+    color: var(--wa-wa-text-secondary);
     margin: 0 2px;
 }
 
@@ -269,7 +269,7 @@ html, body {
 .step-text-container {
     font-size: 18px;
     line-height: 1.5;
-    color: #41525d;
+    color: var(--wa-wa-text-muted);
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -310,7 +310,7 @@ html, body {
     padding: 1px 0.5px;
     margin: 0 4px;
     vertical-align: middle;
-    color: #54656f;
+    color: var(--wa-avatar-bg);
 }
 
 .wa-icon-box svg {
