@@ -153,7 +153,7 @@
 }
 
 .cw__tick--read {
-    color: #53bdeb;
+    color: var(--wa-tick-read);
 }
 
 .cw__bubble--typing {

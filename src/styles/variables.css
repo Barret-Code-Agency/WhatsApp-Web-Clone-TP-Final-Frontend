@@ -157,6 +157,11 @@
 
 :root {
     --wa-loading-bg: #fcf5eb;
+    --wa-loading-bar: #cfc9c2;
+    /* Visor de estados (overlay oscuro fijo, no depende del tema) */
+    --wa-status-bg: #000000;
+    --wa-status-grad-a: #1a1a2e;
+    --wa-status-grad-b: #16213e;
     --wa-login-screen-bg: #fcf5eb;
     --wa-login-text: #111b21;
     --wa-login-link: #00a884;
@@ -167,6 +172,11 @@
     --wa-green-fixed: #00a884;
     --wa-green-legacy: #26d466;
     --wa-dark: #111b21;
+    /* Paleta fija de la landing (maqueta estilo WhatsApp Web, no sigue el tema) */
+    --wa-wa-green: #25d366;
+    --wa-wa-green-dark: #008069;
+    --wa-wa-text-muted: #41525d;
+    --wa-wa-text-secondary: #8696a0;
 }
 
 /* ──────────────────────────────────────────────────────────────
@@ -202,6 +212,7 @@
     /* Colores semanticos */
     --wa-error: #ff4d4f;
     --wa-success: var(--wa-green-online);
+    --wa-avatar-bg: #54656f;
 
     /* Tamanos de avatar */
     --size-avatar-sm: 42px;
