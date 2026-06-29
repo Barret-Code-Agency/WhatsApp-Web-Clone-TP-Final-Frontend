@@ -215,3 +215,15 @@ input:checked+.wa-custom-slider .wa-circle {
     line-height: 1.5;
     color: var(--login-fg-soft);
 }
+
+.login-attempts {
+    text-align: center;
+    font-size: var(--font-sm);
+    margin: var(--space-2) 0 0;
+    color: var(--login-fg-soft);
+}
+
+.login-attempts--blocked {
+    color: var(--wa-error);
+    font-weight: var(--weight-semibold);
+}

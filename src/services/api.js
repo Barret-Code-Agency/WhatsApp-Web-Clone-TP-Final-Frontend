@@ -32,6 +32,13 @@ const request = async (method, path, body) => {
     if (!response.ok || !payload || payload.ok === false) {
         const error = new Error(payload?.message || 'Ocurrio un error en la solicitud')
         error.status = payload?.status || response.status
+        // Si el backend mandó headers de rate limit, los adjuntamos para que la
+        // pantalla pueda mostrar el contador de intentos (ej. "Intento 3 de 10").
+        const limit = response.headers.get('RateLimit-Limit')
+        const remaining = response.headers.get('RateLimit-Remaining')
+        if (limit !== null && remaining !== null) {
+            error.rateLimit = { limit: Number(limit), remaining: Number(remaining) }
+        }
         throw error
     }
 
