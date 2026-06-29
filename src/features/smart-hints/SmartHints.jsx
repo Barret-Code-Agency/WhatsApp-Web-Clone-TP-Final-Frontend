@@ -87,9 +87,9 @@ export default function SmartHints({ text }) {
 
     return (
         <div className="sh__container">
-            {hints.map((h, i) => (
+            {hints.map((h) => (
                 <button
-                    key={i}
+                    key={h.label}
                     className="sh__chip"
                     onClick={() => handleHint(h)}
                     title={h.label}
