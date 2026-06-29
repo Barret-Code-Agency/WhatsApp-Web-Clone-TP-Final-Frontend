@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
-import { ChatProvider } from './context/ChatContext';
+import { ChatProvider, useChat } from './context/ChatContext';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 
 import LoadingScreen from './Screens/LoadingScreen.jsx';
@@ -12,7 +12,7 @@ import ChatWindow from './components/chat/ChatWindow.jsx';
 import Login from './Screens/Login.jsx';
 import GroupChatWindow from './components/chat/GroupChatWindow.jsx';
 import NewGroupPanel from './components/chat/NewGroupPanel.jsx';
-import { getToken, clearToken } from './services/api.js';
+import { getToken } from './services/api.js';
 import { APP_STEP, THEME } from './constants/ui.js';
 
 import './styles/variables.css';
@@ -33,6 +33,7 @@ function AppContent() {
     const [isAddContactOpen, setIsAddContactOpen] = useState(false);
     const [isNewGroupOpen, setIsNewGroupOpen] = useState(false);
     const { setTheme } = useTheme();
+    const { logout: chatLogout } = useChat();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -60,7 +61,10 @@ function AppContent() {
     };
 
     const handleLogout = () => {
-        clearToken();
+        // chatLogout limpia el estado del chat (contactos, mensajes, conversaciones,
+        // no leídos) + localStorage + token. Sin esto, el siguiente usuario que entre
+        // en el mismo navegador veía los datos cacheados del usuario anterior.
+        chatLogout();
         setIsAuthenticated(false);
         setStep(APP_STEP.LANDING);
         navigate('/', { replace: true });
