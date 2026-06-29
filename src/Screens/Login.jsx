@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useChat } from "../context/ChatContext";
 import { register as registerUser, login as loginUser } from "../services/authService";
 import { AUTH_MODE, THEME } from "../constants/ui.js";
+import TurnstileWidget from "../components/TurnstileWidget.jsx";
+import ENVIRONMENT from "../config/environment.js";
 import "../styles/Login.css";
 
 const Login = ({ onLogin }) => {
@@ -14,6 +16,7 @@ const Login = ({ onLogin }) => {
     const [loading, setLoading] = useState(false);
     const [devVerifyUrl, setDevVerifyUrl] = useState('');
     const [attempts, setAttempts] = useState(null); // { limit, remaining } del rate limit del backend
+    const [captchaToken, setCaptchaToken] = useState(''); // token de Turnstile (CAPTCHA del registro)
     const [isDarkMode, setIsDarkMode] = useState(true);
     const { setCurrentUser } = useChat();
 
@@ -22,6 +25,7 @@ const Login = ({ onLogin }) => {
         setError('');
         setInfo('');
         setAttempts(null);
+        setCaptchaToken('');
     };
 
     const handleLogin = async (e) => {
@@ -43,12 +47,17 @@ const Login = ({ onLogin }) => {
     const handleRegister = async (e) => {
         e.preventDefault();
         setError('');
+        if (ENVIRONMENT.TURNSTILE_SITE_KEY && !captchaToken) {
+            setError('Completá la verificación anti-robot.');
+            return;
+        }
         setLoading(true);
         try {
             const data = await registerUser({
                 email: email.trim(),
                 password: pass,
-                display_name: displayName.trim()
+                display_name: displayName.trim(),
+                captcha_token: captchaToken
             });
             // En modo desarrollo el backend devuelve el link de verificacion
             if (data?.verification_url) {
@@ -142,6 +151,8 @@ const Login = ({ onLogin }) => {
                     onChange={e => setPass(e.target.value)}
                     required
                 />
+                {isRegister && <TurnstileWidget onVerify={setCaptchaToken} />}
+
                 <button type="submit" className="wa-button-primary" disabled={loading}>
                     {loading ? 'Procesando...' : (isRegister ? 'Crear cuenta' : 'Entrar')}
                 </button>
