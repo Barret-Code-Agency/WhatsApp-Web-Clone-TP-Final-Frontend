@@ -86,13 +86,15 @@ export const ChatProvider = ({ children }) => {
         }
     }, []);
 
-    // Carga contactos y grupos al montar si ya hay sesion iniciada (fetch en el montaje)
+    // Carga contactos y grupos al montar y cada vez que cambia el usuario logueado.
+    // Depender de currentUser?.id hace que, al iniciar sesion (login fresco, no solo
+    // al recargar), se vuelvan a traer los contactos/grupos del usuario.
     useEffect(() => {
         if (!getToken()) return;
         // eslint-disable-next-line react-hooks/set-state-in-effect
         loadContacts();
         loadGroups();
-    }, [loadContacts, loadGroups]);
+    }, [loadContacts, loadGroups, currentUser?.id]);
 
     const setCurrentUser = (user) => {
         setCurrentUserState(user);
