@@ -227,3 +227,10 @@ input:checked+.wa-custom-slider .wa-circle {
     color: var(--wa-error);
     font-weight: var(--weight-semibold);
 }
+
+.login-turnstile {
+    display: flex;
+    justify-content: center;
+    margin: var(--space-2) 0;
+    min-height: 65px;
+}
