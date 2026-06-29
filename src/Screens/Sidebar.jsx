@@ -162,7 +162,7 @@ const CanalesPanel = ({ onClose }) => {
             {CANALES.map(c => (
                 <div key={c.id} className="canal-item">
                     <img className="canal-avatar" src={c.avatar} alt={c.name}
-                        onError={e => { e.target.src = '/images/default-avatar.jpg'; }} />
+                        onError={e => { e.target.src = '/images/avatar.avif'; }} />
                     <div className="canal-info">
                         <span className="canal-name">{c.name}</span>
                         <span className="canal-followers">{c.followers} seguidores</span>
@@ -416,7 +416,7 @@ const Sidebar = ({ onLogout, onNewGroup }) => {
                                         name={g.name}
                                         lastMessage={g.description || 'Grupo'}
                                         time=""
-                                        avatar={g.avatar_url || '/images/default-avatar.jpg'}
+                                        avatar={g.avatar_url || '/images/avatar.avif'}
                                         isActive={String(activeId) === String(g.group_id)}
                                     />
                                 </Link>
