@@ -13,6 +13,7 @@ const Login = ({ onLogin }) => {
     const [info, setInfo] = useState('');
     const [loading, setLoading] = useState(false);
     const [devVerifyUrl, setDevVerifyUrl] = useState('');
+    const [attempts, setAttempts] = useState(null); // { limit, remaining } del rate limit del backend
     const [isDarkMode, setIsDarkMode] = useState(true);
     const { setCurrentUser } = useChat();
 
@@ -20,6 +21,7 @@ const Login = ({ onLogin }) => {
         setMode(next);
         setError('');
         setInfo('');
+        setAttempts(null);
     };
 
     const handleLogin = async (e) => {
@@ -32,6 +34,7 @@ const Login = ({ onLogin }) => {
             onLogin(isDarkMode ? THEME.DARK : THEME.LIGHT);
         } catch (err) {
             setError(err.message);
+            if (err.rateLimit) setAttempts(err.rateLimit);
         } finally {
             setLoading(false);
         }
@@ -145,6 +148,11 @@ const Login = ({ onLogin }) => {
 
                 {error && <p className="login-error">{error}</p>}
                 {info && <p className="login-info">{info}</p>}
+                {!isRegister && attempts && (
+                    <p className={`login-attempts ${attempts.remaining === 0 ? 'login-attempts--blocked' : ''}`}>
+                        Intento {Math.min(attempts.limit - attempts.remaining, attempts.limit)} de {attempts.limit}
+                    </p>
+                )}
 
                 <button
                     type="button"
