@@ -19,7 +19,6 @@ import './styles/variables.css';
 import './styles/utilities.css';
 import './styles/index.css';
 import './styles/App.css';
-import './styles/ContactScreen.css';
 import './styles/Login.css';
 import './styles/Sidebar.css';
 import './styles/StatusScreen.css';

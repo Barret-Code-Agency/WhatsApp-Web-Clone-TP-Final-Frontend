@@ -259,10 +259,13 @@ export const ChatProvider = ({ children }) => {
         reactions?.[contactId]?.[msgId] || {};
 
     const exportBackup = () => {
+        // Solo se respaldan las reacciones: los mensajes viven en el servidor
+        // (no en localStorage) y el nombre se deriva del usuario logueado. Así el
+        // backup es honesto con lo que importBackup realmente restaura.
         const data = {
             version: '1.0',
             exportedAt: new Date().toISOString(),
-            userName, messages, reactions,
+            reactions,
         };
         const a = document.createElement('a');
         a.href = URL.createObjectURL(
