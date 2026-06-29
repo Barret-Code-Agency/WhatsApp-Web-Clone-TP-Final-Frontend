@@ -50,17 +50,16 @@ const MENU_TRES_PUNTOS_ITEMS = [
 ];
 
 // ── Subcomponentes ─────────────
-const ContactItem = ({ name, lastMessage, time, unreadCount, avatar, isActive }) => (
+const ContactItem = ({ name, lastMessage, time, avatar, isActive }) => (
     <div className={`contact-item ${isActive ? 'contact-item--active' : ''}`}>
         <img src={avatar} alt={name} className="contact-avatar" />
         <div className="contact-info">
             <div className="contact-header">
                 <span className="contact-name">{name}</span>
-                <span className={`contact-time ${unreadCount > 0 ? 'contact-time--unread' : ''}`}>{time}</span>
+                <span className="contact-time">{time}</span>
             </div>
             <div className="contact-footer">
                 <span className="contact-message">{lastMessage}</span>
-                {unreadCount > 0 && <span className="unread-badge">{unreadCount}</span>}
             </div>
         </div>
     </div>
@@ -255,7 +254,7 @@ const NuevoChatPanel = ({ onClose }) => {
                     onClick={() => abrirChat(c.id_usuario)}
                     style={{ cursor: 'pointer' }}
                 >
-                    <img src={c.evatar_url} alt={c.name} className="contact-avatar sidebar-nuevochat-avatar" />
+                    <img src={c.avatar_url} alt={c.name} className="contact-avatar sidebar-nuevochat-avatar" />
                     <div className="contact-info sidebar-nuevochat-info">
                         <span className="contact-name">{c.name}</span>
                         <span className="contact-message">{c.estado_bio}</span>
@@ -317,7 +316,7 @@ const BottomNav = ({ activeNav, setActiveNav }) => {
 const Sidebar = ({ onLogout, onNewGroup }) => {
     const location = useLocation();
     const activeId = (location.pathname.match(/\/(?:chat|group)\/(.+)/) || [])[1] || null;
-    const { contacts, groups, unreadCounts } = useChat();
+    const { contacts, groups } = useChat();
 
     const [activeFilter, setActiveFilter] = useState('Todos');
     const [activeNav, setActiveNav] = useState('chats');
@@ -334,16 +333,11 @@ const Sidebar = ({ onLogout, onNewGroup }) => {
         return () => document.removeEventListener('mousedown', handler);
     }, []);
 
-    const filteredContacts = useMemo(() => {
-        const list = activeFilter === 'No leídos'
-            ? contacts.filter(c => (unreadCounts?.[c.id_usuario] || 0) > 0)
-            : contacts;
-
-        return [...list].sort(
-            (a, b) => (unreadCounts?.[b.id_usuario] || 0) - (unreadCounts?.[a.id_usuario] || 0)
-        );
-
-    }, [activeFilter, contacts, unreadCounts]);
+    // En el filtro "Grupos" no se listan contactos individuales; en el resto, todos.
+    const filteredContacts = useMemo(
+        () => (activeFilter === 'Grupos' ? [] : contacts),
+        [activeFilter, contacts]
+    );
 
     const closePanel = () => setActiveNav('chats');
 
@@ -403,7 +397,7 @@ const Sidebar = ({ onLogout, onNewGroup }) => {
                         </div>
 
                         <div className="filter-chips">
-                            {['Todos', 'No leídos', 'Favoritos', 'Grupos'].map(f => (
+                            {['Todos', 'Favoritos', 'Grupos'].map(f => (
                                 <button key={f}
                                     className={`chip ${activeFilter === f ? 'active' : ''}`}
                                     onClick={() => setActiveFilter(f)}>
@@ -422,29 +416,26 @@ const Sidebar = ({ onLogout, onNewGroup }) => {
                                         name={g.name}
                                         lastMessage={g.description || 'Grupo'}
                                         time=""
-                                        unreadCount={0}
                                         avatar={g.avatar_url || '/images/default-avatar.jpg'}
                                         isActive={String(activeId) === String(g.group_id)}
                                     />
                                 </Link>
                             ))}
-                            {filteredContacts.length === 0 ? (
-                                <div className="no-results"><p>No hay chats no leídos</p></div>
-                            ) : (
-                                filteredContacts.map(contact => (
-                                    <Link key={contact.id_usuario}
-                                        to={`/chat/${contact.id_usuario}`}
-                                        className="contact-link">
-                                        <ContactItem
-                                            name={contact.name}
-                                            lastMessage={contact.estado_bio}
-                                            time={contact.conection === 'En línea' ? 'En línea' : 'Ayer'}
-                                            unreadCount={unreadCounts?.[contact.id_usuario] || 0}
-                                            avatar={contact.evatar_url}
-                                            isActive={String(activeId) === String(contact.id_usuario)}
-                                        />
-                                    </Link>
-                                ))
+                            {filteredContacts.map(contact => (
+                                <Link key={contact.id_usuario}
+                                    to={`/chat/${contact.id_usuario}`}
+                                    className="contact-link">
+                                    <ContactItem
+                                        name={contact.name}
+                                        lastMessage={contact.estado_bio}
+                                        time={contact.conection === 'En línea' ? 'En línea' : 'Ayer'}
+                                        avatar={contact.avatar_url}
+                                        isActive={String(activeId) === String(contact.id_usuario)}
+                                    />
+                                </Link>
+                            ))}
+                            {groups.length === 0 && filteredContacts.length === 0 && (
+                                <div className="no-results"><p>No hay chats</p></div>
                             )}
                         </div>
 
