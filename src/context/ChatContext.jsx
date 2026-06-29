@@ -153,7 +153,7 @@ export const ChatProvider = ({ children }) => {
         } catch (err) {
             console.error('No se pudo abrir el chat:', err.message);
         }
-    }, [ensureConversation, currentUser]);
+    }, [ensureConversation, currentUser?.id]);
 
     const markAsRead = useCallback((contactId) =>
         setUnreadCounts(prev => ({ ...prev, [contactId]: 0 })), []);
@@ -199,7 +199,7 @@ export const ChatProvider = ({ children }) => {
             console.error('No se pudo enviar el mensaje:', err.message);
             setIsTyping(null);
         }
-    }, [contacts, currentUser, ensureConversation]);
+    }, [contacts, currentUser?.id, ensureConversation]);
 
     // ── Grupos ──────────────────────────────────────────────
     const createGroup = useCallback(async (name, memberIds) => {
@@ -231,7 +231,7 @@ export const ChatProvider = ({ children }) => {
         } catch (err) {
             console.error('No se pudo abrir el grupo:', err.message);
         }
-    }, [currentUser]);
+    }, [currentUser?.id]);
 
     const sendGroupMessage = useCallback(async (groupId, conversationId, text) => {
         try {
@@ -243,7 +243,7 @@ export const ChatProvider = ({ children }) => {
         } catch (err) {
             console.error('No se pudo enviar al grupo:', err.message);
         }
-    }, [currentUser]);
+    }, [currentUser?.id]);
 
     const toggleReaction = (contactId, msgId, emoji) => {
         setReactions(prev => {

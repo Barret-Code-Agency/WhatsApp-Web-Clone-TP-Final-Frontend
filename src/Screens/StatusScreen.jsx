@@ -14,19 +14,23 @@ const STATUS_VIDEOS = {
     '049': 'https://res.cloudinary.com/domydb5pd/video/upload/v1772402340/ginobili_lcqeie.mp4',
 };
 
+const STATUS_DURATION_MS = 30000;
+
 const StatusOverlay = ({ contact, onClose }) => {
     const [progress, setProgress] = useState(0);
     const timerRef = useRef(null);
     const startTime = useRef(0);
-    const duration = 30000;
+    // Ref para invocar siempre la última onClose sin re-ejecutar el efecto (ni reiniciar el timer)
+    const onCloseRef = useRef(onClose);
+    onCloseRef.current = onClose;
 
     useEffect(() => {
         startTime.current = Date.now();
         timerRef.current = setInterval(() => {
             const elapsed = Date.now() - startTime.current;
-            const pct = Math.min((elapsed / duration) * 100, 100);
+            const pct = Math.min((elapsed / STATUS_DURATION_MS) * 100, 100);
             setProgress(pct);
-            if (pct >= 100) { clearInterval(timerRef.current); onClose(); }
+            if (pct >= 100) { clearInterval(timerRef.current); onCloseRef.current(); }
         }, 100);
         return () => clearInterval(timerRef.current);
     }, []);

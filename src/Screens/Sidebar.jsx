@@ -135,8 +135,8 @@ const NuevoTipoPanel = ({ onClose, onNewGroup }) => (
     <div className="filter-panel animate-slide-in">
         <PanelHeader title="Nuevos elementos" onClose={onClose} />
         <div className="nuevo-tipo-list">
-            {NUEVO_TIPO_OPCIONES.map((item, i) => (
-                <div key={i} className="nuevo-tipo-item"
+            {NUEVO_TIPO_OPCIONES.map((item) => (
+                <div key={item.label} className="nuevo-tipo-item"
                     onClick={item.label === 'Nuevo grupo' ? onNewGroup : undefined}>
                     <span className="nuevo-tipo-icon">{item.icon}</span>
                     <span>{item.label}</span>
@@ -210,8 +210,8 @@ const MultimediaPanel = ({ onClose }) => (
 const AjustesPanel = ({ onClose, onLogout }) => (
     <div className="side-full-panel animate-slide-in">
         <PanelHeader title="Ajustes" onClose={onClose} />
-        {AJUSTES_OPCIONES.map((o, i) => (
-            <div key={i} className="ajuste-item"
+        {AJUSTES_OPCIONES.map((o) => (
+            <div key={o.icon} className="ajuste-item"
                 onClick={o.label === 'Cerrar sesión' ? onLogout : undefined}>
                 <span className="ajuste-icon">{o.icon}</span>
                 <span className="ajuste-label">{o.label}</span>
@@ -267,8 +267,8 @@ const NuevoChatPanel = ({ onClose }) => {
 
 const MenuTresPuntos = ({ onClose, onLogout }) => (
     <div className="tres-puntos-menu">
-        {MENU_TRES_PUNTOS_ITEMS.map((op, i) => (
-            <div key={i} className="tres-puntos-item" onClick={() => {
+        {MENU_TRES_PUNTOS_ITEMS.map((op) => (
+            <div key={op} className="tres-puntos-item" onClick={() => {
                 onClose();
                 if (op === 'Cerrar sesión') onLogout();
             }}>{op}</div>
