@@ -38,7 +38,7 @@ const StatusOverlay = ({ contact, onClose }) => {
                     <div className="status-progress-fill" style={{ width: `${progress}%` }} />
                 </div>
                 <div className="status-overlay-header">
-                    <img src={contact.evatar_url} alt={contact.name} className="status-overlay-avatar" />
+                    <img src={contact.avatar_url} alt={contact.name} className="status-overlay-avatar" />
                     <span className="status-overlay-name">{contact.name}</span>
                     <span className="status-overlay-time">Hace 5 min</span>
                     <button className="status-close-btn" onClick={onClose}>✕</button>
@@ -59,7 +59,7 @@ const StatusItem = ({ contact, time, viewed, onClick }) => (
     <div className="status-item" onClick={onClick}>
         <div className="status-avatar-wrapper">
             <div className={`status-ring ${viewed ? 'viewed' : ''}`}>
-                <img src={contact.evatar_url} alt={contact.name} className="status-img" />
+                <img src={contact.avatar_url} alt={contact.name} className="status-img" />
             </div>
         </div>
         <div className="status-info">

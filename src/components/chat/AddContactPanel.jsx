@@ -31,8 +31,8 @@ const AddContactPanel = ({ onClose }) => {
     const handleAdd = async (user) => {
         setError('');
         try {
-            await addContact(user._id);
-            setAddedIds(prev => [...prev, user._id]);
+            await addContact(user.id);
+            setAddedIds(prev => [...prev, user.id]);
         } catch (err) {
             setError(err.message);
         }
@@ -80,9 +80,9 @@ const AddContactPanel = ({ onClose }) => {
                 )}
 
                 {results.map(user => {
-                    const added = addedIds.includes(user._id);
+                    const added = addedIds.includes(user.id);
                     return (
-                        <div key={user._id} className="add-panel__result">
+                        <div key={user.id} className="add-panel__result">
                             <div className="add-panel__result-avatar">
                                 {user.avatar_url
                                     ? <img src={user.avatar_url} alt={user.display_name} />

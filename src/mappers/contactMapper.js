@@ -8,7 +8,7 @@ export const mapContact = (contact) => {
         id_usuario: user._id,
         user_id: user._id,
         name: contact.alias || user.display_name || 'Sin nombre',
-        evatar_url: user.avatar_url,
+        avatar_url: user.avatar_url,
         estado_bio: user.status_message || '',
         conection: user.es_bot ? 'En línea' : 'Disponible',
         es_bot: !!user.es_bot,

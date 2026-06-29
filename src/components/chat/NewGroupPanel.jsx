@@ -73,8 +73,8 @@ const NewGroupPanel = ({ onClose }) => {
                             onClick={() => toggle(c.id_usuario)}
                         >
                             <div className="add-panel__result-avatar">
-                                {c.evatar_url
-                                    ? <img src={c.evatar_url} alt={c.name} />
+                                {c.avatar_url
+                                    ? <img src={c.avatar_url} alt={c.name} />
                                     : <Users size={20} />}
                             </div>
                             <div className="add-panel__result-info">
