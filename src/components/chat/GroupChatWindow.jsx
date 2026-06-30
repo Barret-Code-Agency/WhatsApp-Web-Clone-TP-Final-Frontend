@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { Send, MoreVertical, Pencil, Trash2, X } from 'lucide-react';
+import { Send, MoreVertical, Pencil, Trash2, X, UserPlus } from 'lucide-react';
 import { useChat } from '../../context/ChatContext';
 import { getGroup } from '../../services/groupService.js';
 import '../../styles/ChatWindow.css';
@@ -15,7 +15,7 @@ const GroupChatWindow = ({ isMobile, onBack }) => {
     const [busy, setBusy] = useState(false);
     const scrollRef = useRef(null);
     const menuRef = useRef(null);
-    const { groups, messages, openGroupChat, sendGroupMessage, editGroup, deleteGroup } = useChat();
+    const { groups, contacts, messages, openGroupChat, sendGroupMessage, editGroup, deleteGroup, addGroupMember } = useChat();
 
     const group = useMemo(
         () => (groups || []).find(g => String(g.group_id) === String(group_id)),
@@ -26,11 +26,13 @@ const GroupChatWindow = ({ isMobile, onBack }) => {
         [messages, group_id]
     );
 
-    // Trae los miembros para el subtitulo del header
-    useEffect(() => {
-        if (!group_id) return;
-        getGroup(group_id).then(data => setMembers(data.members || [])).catch(() => { });
+    // Trae los miembros (para el subtitulo del header y la lista de "agregar")
+    const refreshMembers = useCallback(() => {
+        if (!group_id) return Promise.resolve();
+        return getGroup(group_id).then(data => setMembers(data.members || [])).catch(() => { });
     }, [group_id]);
+
+    useEffect(() => { refreshMembers(); }, [refreshMembers]);
 
     // Cierra el menu al hacer click fuera
     useEffect(() => {
@@ -72,6 +74,23 @@ const GroupChatWindow = ({ isMobile, onBack }) => {
         setMenuOpen(false);
     };
 
+    const openAddMember = () => {
+        setModalMode('add');
+        setMenuOpen(false);
+    };
+
+    const handleAddMember = async (userId) => {
+        setBusy(true);
+        try {
+            await addGroupMember(group.group_id, userId);
+            await refreshMembers();
+        } catch (err) {
+            console.error('No se pudo agregar el miembro:', err.message);
+        } finally {
+            setBusy(false);
+        }
+    };
+
     const handleSaveEdit = async () => {
         const name = nameInput.trim();
         if (!name) return;
@@ -101,6 +120,10 @@ const GroupChatWindow = ({ isMobile, onBack }) => {
 
     const memberNames = members.map(m => m.user_id?.display_name).filter(Boolean).join(', ');
 
+    // Usuarios del directorio que todavía no están en el grupo
+    const memberIds = new Set(members.map(m => String(m.user_id?._id)));
+    const candidatos = (contacts || []).filter(c => !memberIds.has(String(c.id_usuario)));
+
     return (
         <div className="cw__container">
             <div className="cw__wallpaper" />
@@ -123,6 +146,9 @@ const GroupChatWindow = ({ isMobile, onBack }) => {
                     </button>
                     {menuOpen && (
                         <div className="cw__menu">
+                            <button className="cw__menu-item" onClick={openAddMember}>
+                                <UserPlus size={16} /> Agregar miembro
+                            </button>
                             <button className="cw__menu-item" onClick={openEdit}>
                                 <Pencil size={16} /> Editar grupo
                             </button>
@@ -168,7 +194,7 @@ const GroupChatWindow = ({ isMobile, onBack }) => {
                         <button className="cw__modal-close" onClick={() => !busy && setModalMode(null)} title="Cerrar">
                             <X size={18} />
                         </button>
-                        {modalMode === 'edit' ? (
+                        {modalMode === 'edit' && (
                             <>
                                 <h3 className="cw__modal-title">Editar grupo</h3>
                                 <input
@@ -187,7 +213,8 @@ const GroupChatWindow = ({ isMobile, onBack }) => {
                                     </button>
                                 </div>
                             </>
-                        ) : (
+                        )}
+                        {modalMode === 'delete' && (
                             <>
                                 <h3 className="cw__modal-title">Eliminar grupo</h3>
                                 <p className="cw__modal-text">
@@ -198,6 +225,37 @@ const GroupChatWindow = ({ isMobile, onBack }) => {
                                     <button className="cw__modal-btn cw__modal-btn--danger" onClick={handleDelete} disabled={busy}>
                                         {busy ? 'Eliminando...' : 'Eliminar'}
                                     </button>
+                                </div>
+                            </>
+                        )}
+                        {modalMode === 'add' && (
+                            <>
+                                <h3 className="cw__modal-title">Agregar miembro</h3>
+                                <div className="cw__member-list">
+                                    {candidatos.length === 0 ? (
+                                        <p className="cw__modal-text">No hay más usuarios para agregar.</p>
+                                    ) : (
+                                        candidatos.map(c => (
+                                            <button
+                                                key={c.id_usuario}
+                                                className="cw__member-item"
+                                                onClick={() => handleAddMember(c.id_usuario)}
+                                                disabled={busy}
+                                            >
+                                                <img
+                                                    src={c.avatar_url || '/images/avatar.avif'}
+                                                    alt={c.name}
+                                                    className="cw__member-avatar"
+                                                    onError={e => { e.target.src = '/images/avatar.avif'; }}
+                                                />
+                                                <span className="cw__member-name">{c.name}</span>
+                                                <UserPlus size={16} className="cw__member-add" />
+                                            </button>
+                                        ))
+                                    )}
+                                </div>
+                                <div className="cw__modal-actions">
+                                    <button className="cw__modal-btn" onClick={() => setModalMode(null)} disabled={busy}>Cerrar</button>
                                 </div>
                             </>
                         )}

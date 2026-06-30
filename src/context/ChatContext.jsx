@@ -18,7 +18,8 @@ import {
     listGroups as apiListGroups,
     createGroup as apiCreateGroup,
     updateGroup as apiUpdateGroup,
-    deleteGroup as apiDeleteGroup
+    deleteGroup as apiDeleteGroup,
+    addGroupMember as apiAddGroupMember
 } from '../services/groupService.js';
 import { updateProfile as apiUpdateProfile } from '../services/userService.js';
 import { mapContact } from '../mappers/contactMapper.js';
@@ -220,6 +221,11 @@ export const ChatProvider = ({ children }) => {
         await loadGroups();
     }, [loadGroups]);
 
+    // Agrega un miembro a un grupo existente (devuelve { group, members } actualizado)
+    const addGroupMember = useCallback(async (groupId, userId) => {
+        return await apiAddGroupMember(groupId, userId);
+    }, []);
+
     // Abre / recarga el chat de un grupo (los mensajes van por su conversation_id)
     const openGroupChat = useCallback(async (groupId, conversationId) => {
         try {
@@ -318,6 +324,7 @@ export const ChatProvider = ({ children }) => {
             createGroup,
             editGroup,
             deleteGroup,
+            addGroupMember,
             openGroupChat,
             sendGroupMessage,
         }}>
