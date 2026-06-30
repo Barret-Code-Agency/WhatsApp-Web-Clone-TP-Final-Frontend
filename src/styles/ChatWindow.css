@@ -268,7 +268,8 @@
         inset: 0;
         z-index: 300;
         pointer-events: all;
-        width: 100vw;
+        width: 100%;
+        max-width: 100%;
         overflow: hidden;
     }
 
