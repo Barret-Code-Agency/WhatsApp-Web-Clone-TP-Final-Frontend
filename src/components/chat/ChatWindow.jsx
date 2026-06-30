@@ -140,7 +140,7 @@ const ChatWindow = ({ isMobile, onBack }) => {
                         ‹
                     </button>
                 )}
-                <img src={contact.avatar_url} alt={contact.name} className="cw__header-avatar" />
+                <img src={contact.avatar_url} alt={contact.name} className="cw__header-avatar" onError={e => { e.target.src = '/images/avatar.avif'; }} />
                 <div className="cw__header-info">
                     <span className="cw__header-name">{contact.name}</span>
                     <span className="cw__header-status">
