@@ -22,3 +22,6 @@ export const THEME = {
     DARK: 'dark',
     LIGHT: 'light'
 }
+
+// Avatar por defecto para usuarios sin foto
+export const DEFAULT_AVATAR = '/images/avatar.avif'
