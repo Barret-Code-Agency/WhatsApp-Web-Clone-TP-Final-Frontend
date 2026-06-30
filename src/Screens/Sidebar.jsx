@@ -265,13 +265,14 @@ const NuevoChatPanel = ({ onClose }) => {
     );
 };
 
-const MenuTresPuntos = ({ onClose, onLogout, onNewGroup }) => (
+const MenuTresPuntos = ({ onClose, onLogout, onNewGroup, onAjustes }) => (
     <div className="tres-puntos-menu">
         {MENU_TRES_PUNTOS_ITEMS.map((op) => (
             <div key={op} className="tres-puntos-item" onClick={() => {
                 onClose();
                 if (op === 'Cerrar sesión') onLogout();
                 if (op === 'Nuevo grupo') onNewGroup();
+                if (op === 'Ajustes') onAjustes();
             }}>{op}</div>
         ))}
     </div>
@@ -385,7 +386,7 @@ const Sidebar = ({ onLogout, onNewGroup }) => {
                                     <div onClick={() => setShowMenuTresPuntos(v => !v)}>
                                         <EllipsisVertical size={20} color="var(--wa-text-secondary)" />
                                     </div>
-                                    {showMenuTresPuntos && <MenuTresPuntos onClose={() => setShowMenuTresPuntos(false)} onLogout={onLogout} onNewGroup={onNewGroup} />}
+                                    {showMenuTresPuntos && <MenuTresPuntos onClose={() => setShowMenuTresPuntos(false)} onLogout={onLogout} onNewGroup={onNewGroup} onAjustes={() => setActiveNav('ajustes')} />}
                                 </div>
                             </div>
                         </header>
