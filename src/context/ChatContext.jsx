@@ -9,6 +9,7 @@ import {
     removeContact as apiRemoveContact
 } from '../services/contactService.js';
 import {
+    listConversations as apiListConversations,
     openPrivateConversation,
     getMessages as apiGetMessages,
     sendMessage as apiSendMessage,
@@ -87,6 +88,24 @@ export const ChatProvider = ({ children }) => {
         }
     }, []);
 
+    // Precarga el mapa "usuario -> conversacion" desde la lista de chats. Asi,
+    // abrir un chat que ya existe no necesita el POST /private (que tarda ~1.3s):
+    // ya tenemos su conversation_id y vamos directo a traer los mensajes.
+    const preloadConversationMap = useCallback(async () => {
+        try {
+            const convs = await apiListConversations();
+            const map = {};
+            for (const c of convs) {
+                if (c.type !== 'private') continue;
+                const other = (c.participants || []).find(p => String(p._id) !== String(currentUser?.id));
+                if (other?._id) map[String(other._id)] = c.id;
+            }
+            conversationMapRef.current = { ...conversationMapRef.current, ...map };
+        } catch (err) {
+            console.error('No se pudo precargar el mapa de conversaciones:', err.message);
+        }
+    }, [currentUser?.id]);
+
     // Carga contactos y grupos al montar y cada vez que cambia el usuario logueado.
     // Depender de currentUser?.id hace que, al iniciar sesion (login fresco, no solo
     // al recargar), se vuelvan a traer los contactos/grupos del usuario.
@@ -95,7 +114,8 @@ export const ChatProvider = ({ children }) => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         loadContacts();
         loadGroups();
-    }, [loadContacts, loadGroups, currentUser?.id]);
+        preloadConversationMap();
+    }, [loadContacts, loadGroups, preloadConversationMap, currentUser?.id]);
 
     const setCurrentUser = (user) => {
         setCurrentUserState(user);
