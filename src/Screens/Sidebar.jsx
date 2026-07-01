@@ -3,6 +3,7 @@ import { useChat } from '../context/ChatContext';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { MessageSquarePlus, EllipsisVertical, Search, X } from 'lucide-react';
 import { CANALES } from '../data/canalesData';
+import { STORAGE_KEYS } from '../constants/storage';
 import ChannelIcon from '../components/conmon/ChannelIcon.jsx';
 import ChatIcon from '../components/conmon/ChatIcon.jsx';
 import ComunityIcon from '../components/conmon/ComunityIcon.jsx';
@@ -28,15 +29,17 @@ const NUEVO_TIPO_OPCIONES = [
     { icon: '📋', label: 'Nuevo grupo de encuesta' },
 ];
 
+// `soon: true` marca las opciones aún no implementadas: no muestran flecha de
+// navegación (que prometería una pantalla inexistente) y avisan "Próximamente".
 const AJUSTES_OPCIONES = [
-    { icon: '🔔', label: 'Notificaciones' },
-    { icon: '🔒', label: 'Privacidad' },
-    { icon: '🔐', label: 'Seguridad' },
+    { icon: '🔔', label: 'Notificaciones', soon: true },
+    { icon: '🔒', label: 'Privacidad', soon: true },
+    { icon: '🔐', label: 'Seguridad', soon: true },
     { icon: '🎨', label: <ThemePanel /> },
-    { icon: '💬', label: 'Chats' },
+    { icon: '💬', label: 'Chats', soon: true },
     { icon: '📦', label: <BackupPanel /> },
-    { icon: '🌐', label: 'Idioma' },
-    { icon: '❓', label: 'Ayuda' },
+    { icon: '🌐', label: 'Idioma', soon: true },
+    { icon: '❓', label: 'Ayuda', soon: true },
     { icon: '🚪', label: 'Cerrar sesión' },
 ];
 
@@ -147,19 +150,43 @@ const NuevoTipoPanel = ({ onClose, onNewGroup }) => (
 );
 
 const CanalesPanel = ({ onClose }) => {
-    const [following, setFollowing] = useState([]);
-    const toggle = (id) =>
-        setFollowing(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+    // Los canales que sigo se persisten en localStorage: al reabrir el panel
+    // el estado "Siguiendo" se mantiene.
+    const [following, setFollowing] = useState(() => {
+        try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEYS.FOLLOWED_CHANNELS)) || [];
+        } catch {
+            return [];
+        }
+    });
+    const [query, setQuery] = useState('');
+
+    const toggle = (id) => {
+        setFollowing(prev => {
+            const next = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id];
+            localStorage.setItem(STORAGE_KEYS.FOLLOWED_CHANNELS, JSON.stringify(next));
+            return next;
+        });
+    };
+
+    const filtrados = CANALES.filter(c =>
+        c.name.toLowerCase().includes(query.trim().toLowerCase())
+    );
 
     return (
         <div className="side-full-panel animate-slide-in">
             <PanelHeader title="Canales" onClose={onClose} />
             <div className="canales-search">
                 <Search size={16} color="var(--wa-text-secondary)" />
-                <input type="text" placeholder="Buscar canales" />
+                <input
+                    type="text"
+                    placeholder="Buscar canales"
+                    value={query}
+                    onChange={e => setQuery(e.target.value)}
+                />
             </div>
             <p className="canales-subtitle">Seguir canales</p>
-            {CANALES.map(c => (
+            {filtrados.map(c => (
                 <div key={c.id} className="canal-item">
                     <img className="canal-avatar" src={c.avatar} alt={c.name}
                         onError={e => { e.target.src = '/images/avatar.avif'; }} />
@@ -174,18 +201,21 @@ const CanalesPanel = ({ onClose }) => {
                     </button>
                 </div>
             ))}
+            {filtrados.length === 0 && (
+                <p className="canales-subtitle">No se encontraron canales.</p>
+            )}
         </div>
     );
 };
 
-const ComunidadesPanel = ({ onClose }) => (
+const ComunidadesPanel = ({ onClose, onNewGroup }) => (
     <div className="side-full-panel animate-slide-in">
         <PanelHeader title="Comunidades" onClose={onClose} />
         <div className="comunidades-hero">
             <div className="comunidades-icon" />
             <h3>Crea una comunidad para mantenerte en contacto</h3>
             <p>Las comunidades reúnen a los miembros en grupos por temas y facilitan la recepción de avisos de los administradores.</p>
-            <button className="comunidades-btn">Iniciar tu comunidad</button>
+            <button className="comunidades-btn" onClick={() => { onClose(); onNewGroup(); }}>Iniciar tu comunidad</button>
         </div>
     </div>
 );
@@ -212,10 +242,13 @@ const AjustesPanel = ({ onClose, onLogout }) => (
         <PanelHeader title="Ajustes" onClose={onClose} />
         {AJUSTES_OPCIONES.map((o) => (
             <div key={o.icon} className="ajuste-item"
-                onClick={o.label === 'Cerrar sesión' ? onLogout : undefined}>
+                onClick={o.label === 'Cerrar sesión' ? onLogout : undefined}
+                title={o.soon ? 'Próximamente' : undefined}>
                 <span className="ajuste-icon">{o.icon}</span>
                 <span className="ajuste-label">{o.label}</span>
-                <span className="ajuste-arrow">›</span>
+                {o.soon
+                    ? <span className="ajuste-arrow ajuste-arrow--soon">Próximamente</span>
+                    : <span className="ajuste-arrow">›</span>}
             </div>
         ))}
     </div>
@@ -347,7 +380,7 @@ const Sidebar = ({ onLogout, onNewGroup }) => {
         const panelMap = {
             estados: <StatusScreen />,
             canales: <CanalesPanel onClose={closePanel} />,
-            comunidad: <ComunidadesPanel onClose={closePanel} />,
+            comunidad: <ComunidadesPanel onClose={closePanel} onNewGroup={onNewGroup} />,
             multimedia: <MultimediaPanel onClose={closePanel} />,
             ajustes: <AjustesPanel onClose={closePanel} onLogout={onLogout} />,
             perfil: <ProfilePanel onClose={closePanel} />,
