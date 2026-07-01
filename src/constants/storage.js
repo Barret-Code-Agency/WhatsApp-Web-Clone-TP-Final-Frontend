@@ -5,5 +5,6 @@ export const STORAGE_KEYS = {
     CURRENT_USER: 'cracks_current_user',
     MESSAGES: 'cracks_messages',
     UNREAD: 'cracks_unread',
-    REACTIONS: 'cracks_reactions'
+    REACTIONS: 'cracks_reactions',
+    FOLLOWED_CHANNELS: 'cracks_followed_channels'
 }
