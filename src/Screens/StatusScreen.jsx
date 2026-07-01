@@ -1,39 +1,44 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { contactsData } from "../data/contactsData.jsx";
-import "../styles/StatusScreen.css";
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useChat } from '../context/ChatContext';
+import { listStatuses, publishStatus, deleteStatus } from '../services/statusService';
+import '../styles/StatusScreen.css';
 
-const VIDEO_IDS = ['001', '022', '049', '002', '003', '046', '005'];
+const STATUS_DURATION_MS = 8000;
+const COLORS = ['#00a884', '#8c52ff', '#ff66c4', '#f5a623', '#3b82f6', '#111b21'];
 
-const STATUS_VIDEOS = {
-    '001': 'https://res.cloudinary.com/domydb5pd/video/upload/v1772402340/messi_uc6pik.mp4',
-    '002': 'https://res.cloudinary.com/domydb5pd/video/upload/v1772402340/ronaldo_lqpsdo.mp4',
-    '003': 'https://res.cloudinary.com/domydb5pd/video/upload/v1772402340/james_eqzw3f.mp4',
-    '005': 'https://res.cloudinary.com/domydb5pd/video/upload/v1772402341/hamilton_d0otom.mp4',
-    '022': 'https://res.cloudinary.com/domydb5pd/video/upload/v1772402341/boldt_qmrf7m.mp4',
-    '046': 'https://res.cloudinary.com/domydb5pd/video/upload/v1772402340/wemby_gsex04.mp4',
-    '049': 'https://res.cloudinary.com/domydb5pd/video/upload/v1772402340/ginobili_lcqeie.mp4',
+const timeAgo = (iso) => {
+    const diff = Date.now() - new Date(iso).getTime();
+    const min = Math.floor(diff / 60000);
+    if (min < 1) return 'Recién';
+    if (min < 60) return `Hace ${min} min`;
+    const h = Math.floor(min / 60);
+    if (h < 24) return `Hace ${h} h`;
+    return 'Ayer';
 };
 
-const STATUS_DURATION_MS = 30000;
-
-const StatusOverlay = ({ contact, onClose }) => {
+// Overlay que reproduce los estados de un mismo autor, uno tras otro.
+const StatusOverlay = ({ group, isMine, onClose, onDelete }) => {
+    const [index, setIndex] = useState(0);
     const [progress, setProgress] = useState(0);
     const timerRef = useRef(null);
-    const startTime = useRef(0);
-    // Ref para invocar siempre la última onClose sin re-ejecutar el efecto (ni reiniciar el timer)
-    const onCloseRef = useRef(onClose);
-    onCloseRef.current = onClose;
+    const startRef = useRef(0);
+    const items = group.items;
+    const current = items[index];
 
     useEffect(() => {
-        startTime.current = Date.now();
+        startRef.current = Date.now();
+        setProgress(0);
         timerRef.current = setInterval(() => {
-            const elapsed = Date.now() - startTime.current;
-            const pct = Math.min((elapsed / STATUS_DURATION_MS) * 100, 100);
+            const pct = Math.min(((Date.now() - startRef.current) / STATUS_DURATION_MS) * 100, 100);
             setProgress(pct);
-            if (pct >= 100) { clearInterval(timerRef.current); onCloseRef.current(); }
-        }, 100);
+            if (pct >= 100) {
+                clearInterval(timerRef.current);
+                if (index < items.length - 1) setIndex(i => i + 1);
+                else onClose();
+            }
+        }, 80);
         return () => clearInterval(timerRef.current);
-    }, []);
+    }, [index, items.length, onClose]);
 
     return (
         <div className="status-overlay" onClick={onClose}>
@@ -42,120 +47,197 @@ const StatusOverlay = ({ contact, onClose }) => {
                     <div className="status-progress-fill" style={{ width: `${progress}%` }} />
                 </div>
                 <div className="status-overlay-header">
-                    <img src={contact.avatar_url} alt={contact.name} className="status-overlay-avatar" />
-                    <span className="status-overlay-name">{contact.name}</span>
-                    <span className="status-overlay-time">Hace 5 min</span>
+                    <img src={group.user.avatar_url || '/images/avatar.avif'} alt={group.user.display_name} className="status-overlay-avatar" />
+                    <span className="status-overlay-name">{group.user.display_name}</span>
+                    <span className="status-overlay-time">{timeAgo(current.created_at)}</span>
+                    {isMine && (
+                        <button className="status-delete-btn" title="Eliminar estado" onClick={() => onDelete(current._id)}>🗑</button>
+                    )}
                     <button className="status-close-btn" onClick={onClose}>✕</button>
                 </div>
-                <video
-                    className="status-video"
-                    src={STATUS_VIDEOS[contact.id_usuario]}
-                    autoPlay
-                    controls
-                    loop
-                />
+                {current.content_type === 'image'
+                    ? <img className="status-media" src={current.content} alt="Estado" />
+                    : <div className="status-text-view" style={{ background: current.background || 'var(--rosa, #00a884)' }}>{current.content}</div>}
             </div>
         </div>
     );
 };
 
-const StatusItem = ({ contact, time, viewed, onClick }) => (
+// Creador de estado: texto (con color de fondo) o imagen por URL.
+const StatusCreator = ({ onClose, onPublish }) => {
+    const [type, setType] = useState('text');
+    const [content, setContent] = useState('');
+    const [background, setBackground] = useState(COLORS[0]);
+    const [busy, setBusy] = useState(false);
+    const [error, setError] = useState('');
+
+    const submit = async () => {
+        if (!content.trim()) { setError('Escribí algo para tu estado.'); return; }
+        setBusy(true); setError('');
+        try {
+            await onPublish({ content: content.trim(), content_type: type, background: type === 'text' ? background : null });
+        } catch (e) {
+            setError(e.message || 'No se pudo publicar el estado.');
+            setBusy(false);
+        }
+    };
+
+    return (
+        <div className="status-overlay" onClick={onClose}>
+            <div className="status-creator" onClick={e => e.stopPropagation()}>
+                <div className="status-creator-header">
+                    <h3>Nuevo estado</h3>
+                    <button className="status-close-btn" onClick={onClose}>✕</button>
+                </div>
+                <div className="status-creator-tabs">
+                    <button className={`status-creator-tab${type === 'text' ? ' status-creator-tab--on' : ''}`} onClick={() => setType('text')}>Texto</button>
+                    <button className={`status-creator-tab${type === 'image' ? ' status-creator-tab--on' : ''}`} onClick={() => setType('image')}>Imagen</button>
+                </div>
+
+                {type === 'text' ? (
+                    <>
+                        <div className="status-creator-preview" style={{ background }}>
+                            {content || 'Tu estado…'}
+                        </div>
+                        <textarea
+                            className="status-creator-input"
+                            placeholder="Escribí tu estado"
+                            value={content}
+                            onChange={e => setContent(e.target.value)}
+                            maxLength={200}
+                        />
+                        <div className="status-creator-colors">
+                            {COLORS.map(c => (
+                                <button
+                                    key={c}
+                                    className={`status-creator-color${background === c ? ' status-creator-color--on' : ''}`}
+                                    style={{ background: c }}
+                                    onClick={() => setBackground(c)}
+                                    aria-label={`Fondo ${c}`}
+                                />
+                            ))}
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        {content && (
+                            <img className="status-creator-preview-img" src={content} alt="Vista previa" onError={e => { e.target.style.visibility = 'hidden'; }} />
+                        )}
+                        <input
+                            className="status-creator-input"
+                            placeholder="Pegá la URL de una imagen"
+                            value={content}
+                            onChange={e => setContent(e.target.value)}
+                        />
+                    </>
+                )}
+
+                {error && <p className="status-creator-error">{error}</p>}
+                <button className="status-creator-publish" onClick={submit} disabled={busy}>
+                    {busy ? 'Publicando…' : 'Publicar estado'}
+                </button>
+            </div>
+        </div>
+    );
+};
+
+const StatusItem = ({ group, onClick }) => (
     <div className="status-item" onClick={onClick}>
         <div className="status-avatar-wrapper">
-            <div className={`status-ring ${viewed ? 'viewed' : ''}`}>
-                <img src={contact.avatar_url} alt={contact.name} className="status-img" />
+            <div className="status-ring">
+                <img src={group.user.avatar_url || '/images/avatar.avif'} alt={group.user.display_name} className="status-img" />
             </div>
         </div>
         <div className="status-info">
-            <span className="status-name">{contact.name}</span>
-            <span className="status-time">{time}</span>
+            <span className="status-name">{group.user.display_name}</span>
+            <span className="status-time">{timeAgo(group.items[0].created_at)}</span>
         </div>
-        {!viewed && <span className="status-has-video">▶</span>}
     </div>
 );
 
 const StatusScreen = () => {
-    const [activeContact, setActiveContact] = useState(null);
-    const [vistosIds, setVistosIds] = useState([]);
+    const { currentUser } = useChat();
+    const [statuses, setStatuses] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [activeGroup, setActiveGroup] = useState(null);
+    const [creating, setCreating] = useState(false);
 
-    const recientes = VIDEO_IDS
-        .map(id => contactsData.find(c => c.id_usuario === id))
-        .filter(Boolean);
-
-    const vistosExtra = contactsData
-        .filter(c => !VIDEO_IDS.includes(c.id_usuario))
-        .slice(0, 4);
-
-    const handleOpen = (contact) => {
-        setActiveContact(contact);
-        setVistosIds(prev => [...new Set([...prev, contact.id_usuario])]);
+    const load = async () => {
+        setLoading(true); setError('');
+        try {
+            setStatuses(await listStatuses());
+        } catch (e) {
+            setError(e.message || 'No se pudieron cargar los estados.');
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleClose = () => {
-        setActiveContact(null);
+    useEffect(() => { load(); }, []);
+
+    // Agrupa los estados por autor, conservando el orden (más nuevo primero).
+    const groups = useMemo(() => {
+        const map = new Map();
+        for (const s of statuses) {
+            const u = s.user_id;
+            if (!u) continue;
+            if (!map.has(u._id)) map.set(u._id, { user: u, items: [] });
+            map.get(u._id).items.push(s);
+        }
+        return [...map.values()];
+    }, [statuses]);
+
+    const myGroup = groups.find(g => g.user._id === currentUser?.id) || null;
+    const otherGroups = groups.filter(g => g.user._id !== currentUser?.id);
+
+    const handlePublish = async (payload) => {
+        await publishStatus(payload);
+        setCreating(false);
+        await load();
+    };
+
+    const handleDelete = async (id) => {
+        await deleteStatus(id);
+        setActiveGroup(null);
+        await load();
     };
 
     return (
         <div className="status-screen-container">
-
-            <div className="status-item">
+            <div className="status-item" onClick={() => (myGroup ? setActiveGroup(myGroup) : setCreating(true))}>
                 <div className="status-avatar-wrapper">
-                    <img src="/images/avatar.avif" className="status-img status-img--mine" alt="Yo" />
-                    <div className="status-add-icon">+</div>
+                    <img src={currentUser?.avatar_url || '/images/avatar.avif'} className="status-img status-img--mine" alt="Mi estado" />
+                    <div className="status-add-icon" onClick={(e) => { e.stopPropagation(); setCreating(true); }}>+</div>
                 </div>
                 <div className="status-info">
                     <div className="status-name">Mi estado</div>
-                    <div className="status-time">Añadir una actualización</div>
+                    <div className="status-time">
+                        {myGroup ? `${myGroup.items.length} actualización(es)` : 'Añadir una actualización'}
+                    </div>
                 </div>
             </div>
 
-            {recientes.filter(c => !vistosIds.includes(c.id_usuario)).length > 0 && (
-                <>
-                    <div className="status-section-header">Recientes</div>
-                    {recientes
-                        .filter(c => !vistosIds.includes(c.id_usuario))
-                        .map(c => (
-                            <StatusItem
-                                key={c.id_usuario}
-                                contact={c}
-                                time="Hace 5 min"
-                                viewed={false}
-                                onClick={() => handleOpen(c)}
-                            />
-                        ))
-                    }
-                </>
-            )}
+            {loading && <div className="status-section-header">Cargando…</div>}
+            {error && <div className="status-section-header">{error}</div>}
 
-            <div className="status-section-header viewed">Vistos</div>
-            {recientes
-                .filter(c => vistosIds.includes(c.id_usuario))
-                .map(c => (
-                    <StatusItem
-                        key={c.id_usuario}
-                        contact={c}
-                        time="Hace 5 min"
-                        viewed={true}
-                        onClick={() => handleOpen(c)}
-                    />
-                ))
-            }
-            {vistosExtra.map(c => (
-                <StatusItem
-                    key={c.id_usuario}
-                    contact={c}
-                    time="Ayer"
-                    viewed={true}
-                    onClick={() => { }}
-                />
+            {otherGroups.length > 0 && <div className="status-section-header">Recientes</div>}
+            {otherGroups.map(g => (
+                <StatusItem key={g.user._id} group={g} onClick={() => setActiveGroup(g)} />
             ))}
+            {!loading && !error && otherGroups.length === 0 && (
+                <p className="status-empty">Todavía no hay estados de otros. ¡Publicá el primero!</p>
+            )}
 
-            {activeContact && (
+            {activeGroup && (
                 <StatusOverlay
-                    contact={activeContact}
-                    onClose={handleClose}
+                    group={activeGroup}
+                    isMine={activeGroup.user._id === currentUser?.id}
+                    onClose={() => setActiveGroup(null)}
+                    onDelete={handleDelete}
                 />
             )}
+            {creating && <StatusCreator onClose={() => setCreating(false)} onPublish={handlePublish} />}
         </div>
     );
 };
