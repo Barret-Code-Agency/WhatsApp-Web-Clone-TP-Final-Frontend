@@ -10,6 +10,7 @@ import AddContactPanel from './components/chat/AddContactPanel.jsx';
 import WhatsAppLogin from './Screens/WhatsAppLogin.jsx';
 import ChatWindow from './components/chat/ChatWindow.jsx';
 import Login from './Screens/Login.jsx';
+import ResetPassword from './Screens/ResetPassword.jsx';
 import GroupChatWindow from './components/chat/GroupChatWindow.jsx';
 import NewGroupPanel from './components/chat/NewGroupPanel.jsx';
 import { getToken } from './services/api.js';
@@ -68,6 +69,11 @@ function AppContent() {
         setStep(APP_STEP.LANDING);
         navigate('/', { replace: true });
     };
+
+    // El link del email de recuperación abre /reset-password?token=... y debe
+    // funcionar sin estar logueado, antes de cualquier paso del flujo normal.
+    if (location.pathname === '/reset-password')
+        return <ResetPassword onDone={() => { navigate('/', { replace: true }); setStep(APP_STEP.LOGIN_FORM); }} />;
 
     if (step === APP_STEP.LOADING)
         return <LoadingScreen onFinished={() => setStep(getToken() ? APP_STEP.MAIN : APP_STEP.LANDING)} />;

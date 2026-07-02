@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useChat } from "../context/ChatContext";
-import { register as registerUser, login as loginUser } from "../services/authService";
+import { register as registerUser, login as loginUser, forgotPassword } from "../services/authService";
 import { AUTH_MODE, THEME } from "../constants/ui.js";
 import TurnstileWidget from "../components/TurnstileWidget.jsx";
 import ENVIRONMENT from "../config/environment.js";
@@ -15,6 +15,7 @@ const Login = ({ onLogin }) => {
     const [info, setInfo] = useState('');
     const [loading, setLoading] = useState(false);
     const [devVerifyUrl, setDevVerifyUrl] = useState('');
+    const [devResetUrl, setDevResetUrl] = useState('');
     const [attempts, setAttempts] = useState(null); // { limit, remaining } del rate limit del backend
     const [captchaToken, setCaptchaToken] = useState(''); // token de Turnstile (CAPTCHA del registro)
     const [isDarkMode, setIsDarkMode] = useState(true);
@@ -26,6 +27,7 @@ const Login = ({ onLogin }) => {
         setInfo('');
         setAttempts(null);
         setCaptchaToken('');
+        setDevResetUrl('');
     };
 
     const handleLogin = async (e) => {
@@ -88,7 +90,54 @@ const Login = ({ onLogin }) => {
         }
     };
 
+    const handleForgot = async (e) => {
+        e.preventDefault();
+        setError('');
+        setInfo('');
+        setLoading(true);
+        try {
+            const data = await forgotPassword(email.trim());
+            setInfo('Si el email está registrado, te enviamos un enlace para restablecer la contraseña.');
+            // En desarrollo el backend devuelve el link para probar sin casilla de correo.
+            if (data?.reset_url) setDevResetUrl(data.reset_url);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const renderBody = () => {
+        if (mode === AUTH_MODE.FORGOT) {
+            return (
+                <form className="login-form-fields" onSubmit={handleForgot}>
+                    <p className="login-center">
+                        Ingresá tu email y te enviamos un enlace para restablecer la contraseña.
+                    </p>
+                    <input
+                        className="wa-input"
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                        required
+                    />
+                    <button type="submit" className="wa-button-primary" disabled={loading}>
+                        {loading ? 'Enviando...' : 'Enviar enlace'}
+                    </button>
+                    {error && <p className="login-error">{error}</p>}
+                    {info && <p className="login-info">{info}</p>}
+                    {devResetUrl && (
+                        <p className="login-hint">
+                            (Modo desarrollo: <a href={devResetUrl}>abrir el enlace de restablecimiento</a>)
+                        </p>
+                    )}
+                    <button type="button" className="login-switch" onClick={() => switchMode(AUTH_MODE.LOGIN)}>
+                        Volver a iniciar sesión
+                    </button>
+                </form>
+            );
+        }
         if (mode === AUTH_MODE.VERIFY) {
             return (
                 <div className="login-form-fields">
@@ -172,6 +221,16 @@ const Login = ({ onLogin }) => {
                 >
                     {isRegister ? '¿Ya tenés cuenta? Iniciar sesión' : '¿No tenés cuenta? Crear una'}
                 </button>
+
+                {!isRegister && (
+                    <button
+                        type="button"
+                        className="login-switch"
+                        onClick={() => switchMode(AUTH_MODE.FORGOT)}
+                    >
+                        ¿Olvidaste tu contraseña?
+                    </button>
+                )}
             </form>
         );
     };
@@ -181,13 +240,20 @@ const Login = ({ onLogin }) => {
             <div className="login-card">
                 <div className="login-intro">
                     <img src="/images/cracks-logo.svg" alt="CracksApp" className="login-logo-small" />
-                    <h2>{mode === AUTH_MODE.REGISTER ? 'Crear cuenta' : mode === AUTH_MODE.VERIFY ? 'Verificá tu cuenta' : 'Iniciar sesión'}</h2>
+                    <h2>{
+                        mode === AUTH_MODE.REGISTER ? 'Crear cuenta'
+                            : mode === AUTH_MODE.VERIFY ? 'Verificá tu cuenta'
+                                : mode === AUTH_MODE.FORGOT ? 'Recuperar contraseña'
+                                    : 'Iniciar sesión'
+                    }</h2>
                     <p>
                         {mode === AUTH_MODE.REGISTER
                             ? 'Registrate para empezar a chatear.'
                             : mode === AUTH_MODE.VERIFY
                                 ? 'Último paso antes de entrar.'
-                                : 'Ingresá con tu email y contraseña.'}
+                                : mode === AUTH_MODE.FORGOT
+                                    ? 'Te enviamos un enlace por email.'
+                                    : 'Ingresá con tu email y contraseña.'}
                     </p>
                 </div>
 
