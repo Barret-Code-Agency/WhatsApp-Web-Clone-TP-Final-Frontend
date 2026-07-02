@@ -226,7 +226,7 @@
 }
 
 .cw__send-btn {
-    background-color: var(--wa-green);
+    background-color: var(--wa-green-online);
     border: none;
     border-radius: 50%;
     width: 42px;
