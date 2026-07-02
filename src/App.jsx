@@ -47,7 +47,7 @@ function AppContent() {
     // En el landing, avanzamos solos al login a los 5 segundos (o antes si el usuario hace click).
     useEffect(() => {
         if (step !== APP_STEP.LANDING) return;
-        const timer = setTimeout(() => setStep(APP_STEP.LOGIN_FORM), 5000);
+        const timer = setTimeout(() => setStep(APP_STEP.LOGIN_FORM), 2000);
         return () => clearTimeout(timer);
     }, [step]);
 
