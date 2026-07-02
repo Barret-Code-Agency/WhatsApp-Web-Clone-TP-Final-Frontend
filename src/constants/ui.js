@@ -10,7 +10,8 @@ export const APP_STEP = {
 export const AUTH_MODE = {
     LOGIN: 'login',
     REGISTER: 'register',
-    VERIFY: 'verify'
+    VERIFY: 'verify',
+    FORGOT: 'forgot'
 }
 
 export const MESSAGE_STATUS = {
